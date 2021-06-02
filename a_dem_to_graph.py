@@ -1,4 +1,3 @@
-from copy import copy, deepcopy
 import cv2
 import numpy as np
 from PIL import Image
@@ -11,9 +10,6 @@ import sknw
 import matplotlib.pyplot as plt
 import networkx as nx
 from scipy import ndimage
-from networkx.readwrite import json_graph
-import matplotlib
-# import simplejson as json
 from datetime import datetime
 
 startTime = datetime.now()
@@ -208,18 +204,23 @@ def make_process_plot(img_orig, img_det, thresh2, thresh_unclustered, closed, im
 
 def do_analysis(year):
     its = 2
-    # 2009
     if year == 2009:
         img_orig = read_data('./data/a_2009/arf_dtm_2009.tif')
         its = 1
-
-    # 2019
     elif year == 2019:
         img_orig = read_data('./data/b_2019/arf_dtm_2019.tif')
         its = 2
+    else:
+        print('we do not have data from this year. please select a different year (i.e., 2009, 2019).')
 
     # detrend the image to return microtopographic image only
     img_det = detrender(img_orig, 16)
+    # save microtopographic image for later use
+    im = Image.fromarray(img_det)
+    if year == 2009:
+        im.save("./data/a_2009/arf_microtopo_2009.tif")
+    elif year == 2019:
+        im.save("./data/b_2019/arf_microtopo_2019.tif")
 
     # doing adaptive thresholding on the input image
     thresh2 = cv2.adaptiveThreshold(img_det, img_det.max(), cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,
@@ -240,7 +241,6 @@ def do_analysis(year):
 
     # then eliminate small clusters < 25 pixels total (aka noise)
     skel_clu_elim_25 = small_cluster_elim(img_skel, 25)
-    print(skel_clu_elim_25)
 
     im = Image.fromarray(skel_clu_elim_25)
 
@@ -260,7 +260,7 @@ def do_analysis(year):
         G[s][e]['pts'] = G[s][e]['pts'].tolist()
 
     # and make it a directed graph, since water only flows downslope
-    # flow direction is based on elevation informaiton of DEM heights
+    # flow direction is based on elevation information of DEM heights
     dem = img_orig
     H = make_directed(G, dem)
 

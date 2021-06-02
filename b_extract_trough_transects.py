@@ -314,7 +314,7 @@ def do_analysis(year):
         # extract transects of 9 meter width (trough_width*2 + 1 == 9)
         trough_width = 4
         transect_dict = get_transects(H, img1, trough_width)
-        save_obj(transect_dict, './data/b_2019/arf_transect_dict_2009')
+        save_obj(transect_dict, './data/a_2009/arf_transect_dict_2009')
     elif year == 2019:
         H, coord_dict = read_graph(edgelist_loc='./data/b_2019/arf_graph_2019.edgelist',
                                    coord_dict_loc='./data/b_2019/arf_graph_2019_node-coords.npy')

@@ -171,13 +171,13 @@ def make_process_plot(img_orig, img_det, thresh2, thresh_unclustered, closed, im
     ''' plot the 7 substeps of the
     analysis in one plot
     '''
-    fig, axs = plt.subplots(nrows=4, ncols=2, figsize=(10, 10), sharex='all', sharey='all')
+    fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(10, 10), sharex='all', sharey='all')
 
     # DTM
-    axs[0, 0].imshow(img_orig, cmap='gray')
+    axs[0, 0].imshow(img_orig, cmap='Greens')
 
     # detrended DEM
-    axs[0, 1].imshow(img_det, cmap='gray')
+    axs[0, 1].imshow(img_det, cmap='Greens_r')
 
     # binarized segmentation
     axs[1, 0].imshow(thresh2, cmap='binary')
@@ -200,6 +200,32 @@ def make_process_plot(img_orig, img_det, thresh2, thresh_unclustered, closed, im
 
     plt.setp(plt.gcf().get_axes(), xticks=[], yticks=[])
     plt.savefig(save_loc, dpi=900, bbox_inches='tight', pad_inches=0)
+
+def save_all_substeps(img_orig, img_det, thresh2, thresh_unclustered, closed, img_skel, skel_clu_elim_25, skel_transp):
+    # original DTM
+    # img_orig = Image.fromarray(img_orig)
+    # img_orig.save("./figures/substeps/img_orig.png")
+    # detrended DTM
+    img_det = Image.fromarray(img_det)
+    img_det.save("./figures/substeps/img_det.png")
+    # thresholded
+    thresh2 = Image.fromarray(thresh2)
+    thresh2.save("./figures/substeps/thresh2.png")
+    # thresh_unclustered
+    thresh_unclustered = Image.fromarray(thresh_unclustered)
+    thresh_unclustered.save("./figures/substeps/thresh_unclustered.png")
+    # closed
+    closed = Image.fromarray(closed)
+    closed.save("./figures/substeps/closed.png")
+    # img_skel
+    img_skel = Image.fromarray(img_skel)
+    img_skel.save("./figures/substeps/img_skel.png")
+    # thresholded
+    skel_clu_elim_25 = Image.fromarray(skel_clu_elim_25)
+    skel_clu_elim_25.save("./figures/substeps/skel_clu_elim_25.png")
+    # thresholded
+    skel_transp = Image.fromarray(skel_transp)
+    skel_transp.save("./figures/substeps/skel_transp.png")
 
 
 def do_analysis(year):
@@ -250,6 +276,8 @@ def do_analysis(year):
         for j in range(skel_clu_elim_25.shape[1]):
             if skel_clu_elim_25[i, j] == 1:
                 skel_transp[i, j, 0] = 255
+                skel_transp[i, j, 1] = 255
+                skel_transp[i, j, 2] = 255
                 skel_transp[i, j, 3] = 255
 
     # build graph from skeletonized image
@@ -267,26 +295,24 @@ def do_analysis(year):
     # save graph and node coordinates
     dictio = get_node_coord_dict(H)
 
-    if year == 2009:
-        save_graph_with_coords(H, dictio, './data/a_2009/arf_graph_2009')
-    elif year == 2019:
-        save_graph_with_coords(H, dictio, './data/b_2019/arf_graph_2019')
+    # if year == 2009:
+    #     save_graph_with_coords(H, dictio, './data/a_2009/arf_graph_2009')
+    # elif year == 2019:
+    #     save_graph_with_coords(H, dictio, './data/b_2019/arf_graph_2019')
 
-    # make_process_plot(img_orig, img_det, thresh2, thresh_unclustered, closed, img_skel, skel_clu_elim_25,
-    #                  skel_transp,
-    #                  save_loc='D:/test19.png')
-
-    plt.figure(dpi=300)
-    plt.imshow(img_det, cmap='bone')
-    plt.imshow(skel_transp)
+    plt.figure(figsize=(2.5, 2), dpi=300)
+    plt.imshow(img_det, cmap='Greens_r', alpha=0.7)
+    plt.imshow(skel_transp, cmap='ocean')
     plt.axis('off')
-    # plt.savefig('./data/arf_skel_on_dtm_2019', bbox_inches='tight')
+    plt.savefig("./figures/substeps/skel_transp_on_img_det.png", bbox_inches='tight')
+    # if year == 2019:
+    #     save_all_substeps(img_orig, img_det, thresh2, thresh_unclustered, closed, img_skel, skel_clu_elim_25, skel_transp)
     return H, dictio
 
 
 if __name__ == '__main__':
     plt.figure()
-    H_09, dictio_09 = do_analysis(2009)
+    # H_09, dictio_09 = do_analysis(2009)
     H_19, dictio_19 = do_analysis(2019)
 
     # print time needed for script execution

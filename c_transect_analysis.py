@@ -94,7 +94,25 @@ def inner(key, val, out_key):
             val.append(fwhm_gauss)
             val.append(max_gauss)
             val.append(cod_gauss)
-            return val
+
+            plotting=True
+            if key[0]==15 and key[1]==610:
+                plt.plot(t, data, '+:', label='DTM elevation', color='darkslategrey')
+                plt.plot(t, data_gauss_fit, color='lightseagreen',
+                         label='fitted Gaussian')
+                # , d={0}, w={1}, r2={2}'.format(round(max_gauss, 2),
+                #                                                                     round(fwhm_gauss, 2),
+                #                                                                     round(cod_gauss, 2)
+                plt.legend(frameon=False)
+                plt.ylabel("depth below ground [m]")
+                plt.xlabel("transect length [m]")
+                plt.xticks(np.arange(9), np.arange(1, 10))
+                plt.text(0, 0.25, f'trough width: {round(fwhm_gauss, 2)} m', fontsize=8)
+                plt.text(0, 0.235, f'trough depth: {round(max_gauss, 2)} m', fontsize=8)
+                plt.text(0, 0.22, f'$r^2$ of fit: {round(cod_gauss, 2)}', fontsize=8)
+                # plt.title("direction: {0}, category: {1}".format(val[2], val[3]))
+                plt.savefig('./figures/fitted_to_coords_{0}_{1}.png'.format(key[0], key[1]), dpi=300)
+                plt.close()
         except:
             # bad error handling:
             if val[4]:
@@ -282,12 +300,22 @@ def plot_param_hists_box_width(transect_dict_orig_fitted_09, transect_dict_orig_
                 if trans_info[7] > 0.8:
                     hi_widths_19.append(np.abs(trans_info[5]))
 
-    print(f'all widths: \t 2009: {len(all_widths_09)} \t 2019: {len(all_widths_19)}')
-    print(f'hi widths: \t 2009: {len(hi_widths_09)} \t 2019: {len(hi_widths_19)}')
+    # print(f'all widths: \t 2009: {len(all_widths_09)} \t 2019: {len(all_widths_19)}')
+    # print(f'hi widths: \t 2009: {len(hi_widths_09)} \t 2019: {len(hi_widths_19)}')
+    print("WIDTH")
+    print("r2 > 0.8")
     print(f'median width: \t 2009: {np.median(hi_widths_09)} \t 2019: {np.median(hi_widths_19)}')
     print(f'mean width: \t 2009: {np.mean(hi_widths_09)} \t 2019: {np.mean(hi_widths_19)}')
     print(f'min width: \t 2009: {np.min(hi_widths_09)} \t 2019: {np.min(hi_widths_19)}')
     print(f'max width: \t 2009: {np.max(hi_widths_09)} \t 2019: {np.max(hi_widths_19)}')
+    print(f'std width: \t 2009: {np.std(hi_widths_09)} \t 2019: {np.std(hi_widths_19)}')
+    print("all r2")
+    print(f'median width: \t 2009: {np.median(all_widths_09)} \t 2019: {np.median(all_widths_19)}')
+    print(f'mean width: \t 2009: {np.mean(all_widths_09)} \t 2019: {np.mean(all_widths_19)}')
+    print(f'min width: \t 2009: {np.min(all_widths_09)} \t 2019: {np.min(all_widths_19)}')
+    print(f'max width: \t 2009: {np.max(all_widths_09)} \t 2019: {np.max(all_widths_19)}')
+    print(f'std width: \t 2009: {np.std(all_widths_09)} \t 2019: {np.std(all_widths_19)}')
+    print("______________________________________________________________")
 
     # do the plotting
     boxplotprops_09 = {'patch_artist': True,
@@ -404,12 +432,27 @@ def plot_param_hists_box_depth(transect_dict_orig_fitted_09, transect_dict_orig_
                 if trans_info[7] > 0.8:
                     hi_depths_19.append(trans_info[6])
 
-    print(f'all widths: \t 2009: {len(all_depths_09)} \t 2019: {len(all_depths_19)}')
-    print(f'hi widths: \t 2009: {len(hi_depths_09)} \t 2019: {len(hi_depths_19)}')
-    print(f'median width: \t 2009: {np.median(hi_depths_09)} \t 2019: {np.median(hi_depths_19)}')
-    print(f'mean width: \t 2009: {np.mean(hi_depths_09)} \t 2019: {np.mean(hi_depths_19)}')
-    print(f'min width: \t 2009: {np.min(hi_depths_09)} \t 2019: {np.min(hi_depths_19)}')
-    print(f'max width: \t 2009: {np.max(hi_depths_09)} \t 2019: {np.max(hi_depths_19)}')
+    # print(f'all depths: \t 2009: {len(all_depths_09)} \t 2019: {len(all_depths_19)}')
+    # print(f'hi depths: \t 2009: {len(hi_depths_09)} \t 2019: {len(hi_depths_19)}')
+    # print(f'median depths: \t 2009: {np.median(hi_depths_09)} \t 2019: {np.median(hi_depths_19)}')
+    # print(f'mean depths: \t 2009: {np.mean(hi_depths_09)} \t 2019: {np.mean(hi_depths_19)}')
+    # print(f'min depths: \t 2009: {np.min(hi_depths_09)} \t 2019: {np.min(hi_depths_19)}')
+    # print(f'max depths: \t 2009: {np.max(hi_depths_09)} \t 2019: {np.max(hi_depths_19)}')
+
+    print("DEPTH")
+    print("r2 > 0.8")
+    print(f'median depths: \t 2009: {np.median(hi_depths_09)} \t 2019: {np.median(hi_depths_19)}')
+    print(f'mean depths: \t 2009: {np.mean(hi_depths_09)} \t 2019: {np.mean(hi_depths_19)}')
+    print(f'min depths: \t 2009: {np.min(hi_depths_09)} \t 2019: {np.min(hi_depths_19)}')
+    print(f'max depths: \t 2009: {np.max(hi_depths_09)} \t 2019: {np.max(hi_depths_19)}')
+    print(f'std depths: \t 2009: {np.std(hi_depths_09)} \t 2019: {np.std(hi_depths_19)}')
+    print("all r2")
+    print(f'median depths: \t 2009: {np.median(all_depths_09)} \t 2019: {np.median(all_depths_19)}')
+    print(f'mean depths: \t 2009: {np.mean(all_depths_09)} \t 2019: {np.mean(all_depths_19)}')
+    print(f'min depths: \t 2009: {np.min(all_depths_09)} \t 2019: {np.min(all_depths_19)}')
+    print(f'max depths: \t 2009: {np.max(all_depths_09)} \t 2019: {np.max(all_depths_19)}')
+    print(f'std depths: \t 2009: {np.std(all_depths_09)} \t 2019: {np.std(all_depths_19)}')
+    print("______________________________________________________________")
 
     # do the plotting
     boxplotprops_09 = {'patch_artist': True,
@@ -541,12 +584,27 @@ def plot_param_hists_box_cod(transect_dict_orig_fitted_09, transect_dict_orig_fi
 
     print(f'{(cod_neg_19*100)/(cod_neg_19+cod_pos_19)} of all fits had a r2 < 0')
 
-    print(f'all widths: \t 2009: {len(all_cods_09)} \t 2019: {len(all_cods_19)}')
-    print(f'hi widths: \t 2009: {len(hi_cods_09)} \t 2019: {len(hi_cods_19)}')
-    print(f'median width: \t 2009: {np.median(hi_cods_09)} \t 2019: {np.median(hi_cods_19)}')
-    print(f'mean width: \t 2009: {np.mean(hi_cods_09)} \t 2019: {np.mean(hi_cods_19)}')
-    print(f'min width: \t 2009: {np.min(hi_cods_09)} \t 2019: {np.min(hi_cods_19)}')
-    print(f'max width: \t 2009: {np.max(hi_cods_09)} \t 2019: {np.max(hi_cods_19)}')
+    # print(f'all r2: \t 2009: {len(all_cods_09)} \t 2019: {len(all_cods_19)}')
+    # print(f'hi r2: \t 2009: {len(hi_cods_09)} \t 2019: {len(hi_cods_19)}')
+    # print(f'median r2r2: \t 2009: {np.median(hi_cods_09)} \t 2019: {np.median(hi_cods_19)}')
+    # print(f'mean width: \t 2009: {np.mean(hi_cods_09)} \t 2019: {np.mean(hi_cods_19)}')
+    # print(f'min r2: \t 2009: {np.min(hi_cods_09)} \t 2019: {np.min(hi_cods_19)}')
+    # print(f'max r2: \t 2009: {np.max(hi_cods_09)} \t 2019: {np.max(hi_cods_19)}')
+
+    print("R2")
+    print("r2 > 0.8")
+    print(f'median r2: \t 2009: {np.median(hi_cods_09)} \t 2019: {np.median(hi_cods_19)}')
+    print(f'mean r2: \t 2009: {np.mean(hi_cods_09)} \t 2019: {np.mean(hi_cods_19)}')
+    print(f'min r2: \t 2009: {np.min(hi_cods_09)} \t 2019: {np.min(hi_cods_19)}')
+    print(f'max r2: \t 2009: {np.max(hi_cods_09)} \t 2019: {np.max(hi_cods_19)}')
+    print(f'std r2: \t 2009: {np.std(hi_cods_09)} \t 2019: {np.std(hi_cods_19)}')
+    print("all r2")
+    print(f'median r2: \t 2009: {np.median(all_cods_09)} \t 2019: {np.median(all_cods_19)}')
+    print(f'mean r2: \t 2009: {np.mean(all_cods_09)} \t 2019: {np.mean(all_cods_19)}')
+    print(f'min r2: \t 2009: {np.min(all_cods_09)} \t 2019: {np.min(all_cods_19)}')
+    print(f'max r2: \t 2009: {np.max(all_cods_09)} \t 2019: {np.max(all_cods_19)}')
+    print(f'std r2: \t 2009: {np.std(all_cods_09)} \t 2019: {np.std(all_cods_19)}')
+    print("______________________________________________________________")
 
     # do the plotting
     boxplotprops_09 = {'patch_artist': True,
@@ -748,7 +806,7 @@ def do_analysis(fit_gaussian=True):
         transect_dict_09 = load_obj('./data/a_2009/arf_transect_dict_2009')
 
         transect_dict_fitted_09 = fit_gaussian_parallel(transect_dict_09)
-        save_obj(transect_dict_fitted_09, './data/a_2009/arf_transect_dict_fitted_2009')
+        # save_obj(transect_dict_fitted_09, './data/a_2009/arf_transect_dict_fitted_2009')
 
     transect_dict_fitted_09 = load_obj('./data/a_2009/arf_transect_dict_fitted_2009')
     edge_param_dict_09 = get_trough_avgs_gauss(transect_dict_fitted_09)
@@ -758,7 +816,7 @@ def do_analysis(fit_gaussian=True):
     if fit_gaussian:
         transect_dict_19 = load_obj('./data/b_2019/arf_transect_dict_2019')
         transect_dict_fitted_19 = fit_gaussian_parallel(transect_dict_19)
-        save_obj(transect_dict_fitted_19, './data/b_2019/arf_transect_dict_fitted_2019')
+        # save_obj(transect_dict_fitted_19, './data/b_2019/arf_transect_dict_fitted_2019')
 
     transect_dict_fitted_19 = load_obj('./data/b_2019/arf_transect_dict_fitted_2019')
     edge_param_dict_19 = get_trough_avgs_gauss(transect_dict_fitted_19)
@@ -768,13 +826,13 @@ def do_analysis(fit_gaussian=True):
 
 
 if __name__ == '__main__':
-    transect_dict_fitted_09, transect_dict_fitted_19, edge_param_dict_09, edge_param_dict_19 = do_analysis(False)
+    transect_dict_fitted_09, transect_dict_fitted_19, edge_param_dict_09, edge_param_dict_19 = do_analysis(True)
 
     # plot_param_hists_box_width(transect_dict_fitted_09, transect_dict_fitted_19)
     # plot_param_hists_box_depth(transect_dict_fitted_09, transect_dict_fitted_19)
-    plot_param_hists_box_cod(transect_dict_fitted_09, transect_dict_fitted_19)
+    # plot_param_hists_box_cod(transect_dict_fitted_09, transect_dict_fitted_19)
     # plot_legend(transect_dict_fitted_09, transect_dict_fitted_19)
 
     print(datetime.now() - startTime)
 
-    plt.show()
+    # plt.show()

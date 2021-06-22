@@ -3,3 +3,4 @@ venv/
 .idea/
 detrender.py
 plotting_helpers.py
+figures/test_fits/

@@ -103,6 +103,7 @@ def connected_comp_analysis(graph):
         edge_size.append(len(i))
     print(f'they have {edge_size} edges')
 
+
 def network_density(graph):
     '''calculate network density of
     graph.
@@ -215,17 +216,17 @@ def do_analysis(graph):
     sink_source_analysis(graph)
     # number of connected components
     connected_comp_analysis(graph)
-    # # average shortest path lengths
-    # # for all:
-    # shortest_path_lengths_not_connected(graph)
-    # # for largest component only:
-    # shortest_path_lengths_connected(graph)
-    # # betweenness centrality
-    # betweenness_centrality(graph)
-    # # network density
-    # network_density(graph)
-    # # length of all channels in the network
-    # get_total_channel_length(graph)
+    # average shortest path lengths
+    # for all:
+    shortest_path_lengths_not_connected(graph)
+    # for largest component only:
+    shortest_path_lengths_connected(graph)
+    # betweenness centrality
+    betweenness_centrality(graph)
+    # network density
+    network_density(graph)
+    # length of all channels in the network
+    get_total_channel_length(graph)
     print("_______________________")
 
 

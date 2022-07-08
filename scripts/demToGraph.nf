@@ -5,7 +5,7 @@ nextflow.enable.dsl=2
 
 process demToGraph {
 
-    container 'was1docker/iwd:latest'
+    container 'fondahub/iwd:latest'
 
     input:
         path yearFile

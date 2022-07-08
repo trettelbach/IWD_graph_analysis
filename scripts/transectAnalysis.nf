@@ -2,7 +2,7 @@ nextflow.enable.dsl=2
 
 process transectAnalysis {
 
-    container 'was1docker/iwd:latest'
+    container 'fondahub/iwd:latest'
 
     input:
         path pkl

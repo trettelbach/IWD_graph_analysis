@@ -2,7 +2,7 @@ nextflow.enable.dsl=2
 
 process extractTroughTransects {
 
-    container 'was1docker/iwd:latest'
+    container 'fondahub/iwd:latest'
 
     input:
         path npy

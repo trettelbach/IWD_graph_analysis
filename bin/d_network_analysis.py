@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+import sys
 import pickle
 import numpy as np
 import networkx as nx
@@ -7,7 +10,7 @@ from b_extract_trough_transects import read_graph
 from datetime import datetime
 
 def load_obj(name):
-    with open(name + '.pkl', 'rb') as f:
+    with open(name + '', 'rb') as f:
         return pickle.load(f)
 
 
@@ -233,26 +236,19 @@ def do_analysis(graph):
 if __name__ == '__main__':
     startTime = datetime.now()
 
-    # read in 2009 data
-    G_09, coord_dict_09 = read_graph(edgelist_loc='./data/a_2009/arf_graph_2009.edgelist',
-                                     coord_dict_loc='./data/a_2009/arf_graph_2009_node-coords.npy')
+    edgelist = sys.argv[1]
+    npy = sys.argv[2]
+    dict_avg = sys.argv[3]
 
-    transect_dict_fitted_2009 = load_obj('./data/a_2009/arf_transect_dict_avg_2009')
+    # read in 2009 data
+    G_09, coord_dict_09 = read_graph(edgelist_loc=edgelist,
+                                     coord_dict_loc=npy)
+
+    transect_dict_fitted_2009 = load_obj(dict_avg)
 
     add_params_graph(G_09, transect_dict_fitted_2009)
 
-    # read in 2019 data
-    G_19, coord_dict_19 = read_graph(edgelist_loc='./data/b_2019/arf_graph_2019.edgelist',
-                                     coord_dict_loc='./data/b_2019/arf_graph_2019_node-coords.npy')
-
-    transect_dict_fitted_2019 = load_obj('./data/b_2019/arf_transect_dict_avg_2019')
-
-    add_params_graph(G_19, transect_dict_fitted_2019)
-
-    # graph analysis 2009
     do_analysis(G_09)
-    # graph analysis 2019
-    do_analysis(G_19)
 
     print(datetime.now() - startTime)
     plt.show()

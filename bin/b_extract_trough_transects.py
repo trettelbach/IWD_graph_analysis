@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+
 import numpy as np
 from PIL import Image
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import sys
 import networkx as nx
 import pickle
@@ -26,6 +28,10 @@ def read_graph(edgelist_loc, coord_dict_loc):
     # the first weight 'weight' actually characterizes the length in pixels of the trough.
 
     # original dataset
+
+    print(edgelist_loc)
+    print(coord_dict_loc)
+
     G = nx.read_edgelist(edgelist_loc, data=True, create_using=nx.DiGraph())
     coord_dict = np.load(coord_dict_loc, allow_pickle=True).item()
 
@@ -304,35 +310,38 @@ def save_obj(obj, name):
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 
-def do_analysis(year):
-    if year == 2009:
-        H, coord_dict = read_graph(edgelist_loc='./data/a_2009/arf_graph_2009.edgelist',
-                                   coord_dict_loc='./data/a_2009/arf_graph_2009_node-coords.npy')
+def do_analysis(edgelistFile,npyFile,dtmTifFile):
+    if "2009" in dtmTifFile:
+        H, coord_dict = read_graph(edgelist_loc=edgelistFile,
+                                   coord_dict_loc=npyFile)
 
-        img1 = Image.open('./data/a_2009/arf_dtm_2009.tif')
+        img1 = Image.open(dtmTifFile)
         img1 = np.array(img1)
         # extract transects of 9 meter width (trough_width*2 + 1 == 9)
         trough_width = 4
         transect_dict = get_transects(H, img1, trough_width)
-        save_obj(transect_dict, './data/a_2009/arf_transect_dict_2009')
-    elif year == 2019:
-        H, coord_dict = read_graph(edgelist_loc='./data/b_2019/arf_graph_2019.edgelist',
-                                   coord_dict_loc='./data/b_2019/arf_graph_2019_node-coords.npy')
+        save_obj(transect_dict, 'arf_transect_dict_2009')
+    elif "2019" in dtmTifFile:
+        H, coord_dict = read_graph(edgelist_loc=edgelistFile,
+                                   coord_dict_loc=npyFile)
 
-        img1 = Image.open('./data/b_2019/arf_dtm_2019.tif')
+        img1 = Image.open(dtmTifFile)
         img1 = np.array(img1)
         # extract transects of 9 meter width (trough_width*2 + 1 == 9)
         trough_width = 4
         transect_dict = get_transects(H, img1, trough_width)
-        save_obj(transect_dict, './data/b_2019/arf_transect_dict_2019')
+        save_obj(transect_dict, 'arf_transect_dict_2019')
     else:
         print('we do not have data from this year. please select a different year (i.e., 2009, 2019).')
 
 if __name__ == '__main__':
     startTime = datetime.now()
 
-    do_analysis(2009)
-    do_analysis(2019)
+    edgelistFile = sys.argv[3]
+    npyFile = sys.argv[1]
+    dtmTifFile = sys.argv[2]
+
+    do_analysis(edgelistFile,npyFile,dtmTifFile)
 
     print(datetime.now() - startTime)
-    plt.show()
+    #plt.show()

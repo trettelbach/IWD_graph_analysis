@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 import pickle
 import numpy as np
@@ -12,7 +14,7 @@ startTime = datetime.now()
 np.set_printoptions(threshold=sys.maxsize)
 
 def load_obj(name):
-    with open(name + '.pkl', 'rb') as f:
+    with open(name, 'rb') as f:
         return pickle.load(f)
 
 
@@ -800,33 +802,27 @@ def plot_legend(transect_dict_orig_fitted_09, transect_dict_orig_fitted_19):
     plt.savefig('./figures/legend.png')
 
 
-def do_analysis(fit_gaussian=True):
-    # 2009
-    if fit_gaussian:
-        transect_dict_09 = load_obj('./data/a_2009/arf_transect_dict_2009')
-
-        transect_dict_fitted_09 = fit_gaussian_parallel(transect_dict_09)
-        # save_obj(transect_dict_fitted_09, './data/a_2009/arf_transect_dict_fitted_2009')
-
-    transect_dict_fitted_09 = load_obj('./data/a_2009/arf_transect_dict_fitted_2009')
-    edge_param_dict_09 = get_trough_avgs_gauss(transect_dict_fitted_09)
-    save_obj(edge_param_dict_09, './data/a_2009/arf_transect_dict_avg_2009')
+def do_analysis(transectFile, fit_gaussian=True):
 
     # 2019
     if fit_gaussian:
-        transect_dict_19 = load_obj('./data/b_2019/arf_transect_dict_2019')
+        transect_dict_19 = load_obj(transectFile)
         transect_dict_fitted_19 = fit_gaussian_parallel(transect_dict_19)
-        # save_obj(transect_dict_fitted_19, './data/b_2019/arf_transect_dict_fitted_2019')
+        save_obj(transect_dict_fitted_19, 'arf_transect_dict_fitted_2019')
 
-    transect_dict_fitted_19 = load_obj('./data/b_2019/arf_transect_dict_fitted_2019')
+    transect_dict_fitted_19 = load_obj('arf_transect_dict_fitted_2019.pkl')
     edge_param_dict_19 = get_trough_avgs_gauss(transect_dict_fitted_19)
-    save_obj(edge_param_dict_19, './data/b_2019/arf_transect_dict_avg_2019')
+    save_obj(edge_param_dict_19, 'arf_transect_dict_avg_2019')
 
-    return transect_dict_fitted_09, transect_dict_fitted_19, edge_param_dict_09, edge_param_dict_19
+    return transect_dict_fitted_19, edge_param_dict_19
 
 
 if __name__ == '__main__':
-    transect_dict_fitted_09, transect_dict_fitted_19, edge_param_dict_09, edge_param_dict_19 = do_analysis(True)
+
+
+    pkl = sys.argv[1]
+
+    transect_dict_fitted_19, edge_param_dict_19 = do_analysis(pkl, True)
 
     # plot_param_hists_box_width(transect_dict_fitted_09, transect_dict_fitted_19)
     # plot_param_hists_box_depth(transect_dict_fitted_09, transect_dict_fitted_19)

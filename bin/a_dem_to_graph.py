@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import cv2
 import numpy as np
 from PIL import Image
@@ -149,6 +151,8 @@ def get_node_coord_dict(graph):
 
 
 def save_graph_with_coords(graph, dict, location):
+
+    print('Call save_graph')
     ''' save graph as edgelist to disk
     and coords for nodes as dictionary
 
@@ -163,6 +167,7 @@ def save_graph_with_coords(graph, dict, location):
 
     # and save coordinates of graph as npy dict to disk
     fname = location + '_node-coords'
+    print("fname: " + fname)
     np.save(fname, dict)
 
 
@@ -206,6 +211,7 @@ def save_all_substeps(img_orig, img_det, thresh2, thresh_unclustered, closed, im
     # img_orig = Image.fromarray(img_orig)
     # img_orig.save("./figures/substeps/img_orig.png")
     # detrended DTM
+    # TODO savesubsteps
     img_det = Image.fromarray(img_det)
     img_det.save("./figures/substeps/img_det.png")
     # thresholded
@@ -228,13 +234,16 @@ def save_all_substeps(img_orig, img_det, thresh2, thresh_unclustered, closed, im
     skel_transp.save("./figures/substeps/skel_transp.png")
 
 
-def do_analysis(year):
+def do_analysis(yearFile):
     its = 2
-    if year == 2009:
-        img_orig = read_data('./data/a_2009/arf_dtm_2009.tif')
+
+    print(yearFile)
+
+    if '2009' in yearFile :
+        img_orig = read_data(yearFile)
         its = 1
-    elif year == 2019:
-        img_orig = read_data('./data/b_2019/arf_dtm_2019.tif')
+    elif '2019' in yearFile :
+        img_orig = read_data(yearFile)
         its = 2
     else:
         print('we do not have data from this year. please select a different year (i.e., 2009, 2019).')
@@ -243,10 +252,10 @@ def do_analysis(year):
     img_det = detrender(img_orig, 16)
     # save microtopographic image for later use
     im = Image.fromarray(img_det)
-    if year == 2009:
-        im.save("./data/a_2009/arf_microtopo_2009.tif")
-    elif year == 2019:
-        im.save("./data/b_2019/arf_microtopo_2019.tif")
+    if '2009' in yearFile:
+        im.save("arf_microtopo_2009.tif")
+    elif '2019' in yearFile:
+        im.save("arf_microtopo_2019.tif")
 
     # doing adaptive thresholding on the input image
     thresh2 = cv2.adaptiveThreshold(img_det, img_det.max(), cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,
@@ -295,16 +304,16 @@ def do_analysis(year):
     # save graph and node coordinates
     dictio = get_node_coord_dict(H)
 
-    # if year == 2009:
-    #     save_graph_with_coords(H, dictio, './data/a_2009/arf_graph_2009')
-    # elif year == 2019:
-    #     save_graph_with_coords(H, dictio, './data/b_2019/arf_graph_2019')
+    if '2009' in yearFile:
+        save_graph_with_coords(H, dictio, 'arf_graph_2009')
+    elif '2019' in yearFile:
+        save_graph_with_coords(H, dictio, 'arf_graph_2019')
 
     plt.figure(figsize=(2.5, 2), dpi=300)
     plt.imshow(img_det, cmap='Greens_r', alpha=0.7)
     plt.imshow(skel_transp, cmap='ocean')
     plt.axis('off')
-    plt.savefig("./figures/substeps/skel_transp_on_img_det.png", bbox_inches='tight')
+    plt.savefig("skel_transp_on_img_det.png", bbox_inches='tight')
     # if year == 2019:
     #     save_all_substeps(img_orig, img_det, thresh2, thresh_unclustered, closed, img_skel, skel_clu_elim_25, skel_transp)
     return H, dictio
@@ -312,8 +321,12 @@ def do_analysis(year):
 
 if __name__ == '__main__':
     plt.figure()
+
+    yearFile = sys.argv[1]
+
     # H_09, dictio_09 = do_analysis(2009)
-    H_19, dictio_19 = do_analysis(2019)
+    # Hier für sys ars nehmen und in NF dafür values übergeben
+    H_19, dictio_19 = do_analysis(yearFile)
 
     # print time needed for script execution
     print(datetime.now() - startTime)

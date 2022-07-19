@@ -2,6 +2,7 @@
 
 import sys
 import pickle
+import csv
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ def load_obj(name):
         return pickle.load(f)
 
 
-def add_params_graph(G, edge_param_dict):
+def add_params_to_graph(G, edge_param_dict):
     ''' take entire transect dictionary and
     the original graph G and add the mean/median
     parameter values to the graph edges.
@@ -42,6 +43,7 @@ def add_params_graph(G, edge_param_dict):
     for (s, e) in G.edges():
         # and retrieve information on the corresponding edges from the dictionary
         if (s, e) in edge_param_dict:  # TODO: apparently some (xx) edges aren't in the edge_param_dict. check out why
+
             G[s][e]['mean_width'] = edge_param_dict[(s, e)][0]
             G[s][e]['median_width'] = edge_param_dict[(s, e)][1]
             G[s][e]['mean_depth'] = edge_param_dict[(s, e)][2]
@@ -53,11 +55,13 @@ def add_params_graph(G, edge_param_dict):
             num_full += 1
         else:
             print("{} doesn't exist in the edge_param_dict, but only in the Graph.".format(str((s, e))))
+            # print(G[s][e]['pts'])
+            # probably all of the missing ones are those too close to the image border and thus don't have any transects
             num_emp += 1
-    print(num_emp, num_full)
+    print(f'empty edges: {num_emp}, full edges: {num_full}')
 
 
-def sink_source_analysis(graph):
+def analyze_sinks_sources(graph):
     ''' analysze how many sources
     and sinks a graph has
 
@@ -76,21 +80,22 @@ def sink_source_analysis(graph):
         elif graph.out_degree(n) == 0:
             sinks += 1
 
-    print("sources: {}".format(sources))
-    print("sinks: {}".format(sinks))
+    # print("sources: {}".format(sources))
+    # print("sinks: {}".format(sinks))
     # count = Counter(degree_list)
     # count_sorted = sorted(count, reverse=True)
     # print("subgraph_sizes: {0}".format(count))
+    return sinks, sources
 
 
-def connected_comp_analysis(graph):
+def analyze_connected_comp(graph):
     ''' print number of connected components
     and their respective sizes '''
     graph = graph.to_undirected()
     nodes = []
     edges = []
     node_size = []
-    edge_size = []
+    edge_sizes = []
     components = [graph.subgraph(p).copy() for p in nx.connected_components(graph)]
     # print(components, type(components))
     for comp in components:
@@ -100,14 +105,15 @@ def connected_comp_analysis(graph):
         node_size.append(len(c))
     comp_sizes = Counter(node_size)
     od = OrderedDict(sorted(comp_sizes.items()))
-    print(f'number of connected components is: {len(node_size)}')
-    print(f'their sizes are: {comp_sizes}')
+    # print(f'number of connected components is: {len(node_size)}')
+    # print(f'their sizes are: {comp_sizes}')
     for i in edges:
-        edge_size.append(len(i))
-    print(f'they have {edge_size} edges')
+        edge_sizes.append(len(i))
+    # print(f'they have {Counter(edge_sizes)} edges')
+    return Counter(edge_sizes)
 
 
-def network_density(graph):
+def get_network_density(graph):
     '''calculate network density of
     graph.
 
@@ -123,13 +129,14 @@ def network_density(graph):
     e_pot = 3/2 * (num_nodes+1)
     # density
     dens = e_exist / e_pot
-    print(f"num_nodes is: \n\t{num_nodes}")
-    print(f"e_exist is: \n\t{e_exist}")
-    print(f"e_pot is: \n\t{e_pot}")
-    print(f"Absolute network density is: \n\t{dens}")
+    # print(f"num_nodes is: \n\t{num_nodes}")
+    # print(f"e_exist is: \n\t{e_exist}")
+    # print(f"e_pot is: \n\t{e_pot}")
+    # print(f"Absolute network density is: \n\t{dens}")
+    return e_pot, dens
 
 
-def betweenness_centrality(graph):
+def get_betweenness_centrality(graph):
     '''calculate average betweenness centrality
     for all edges.
 
@@ -142,7 +149,7 @@ def betweenness_centrality(graph):
           f"min: {np.min(list(bet_cent.values()))}; max: {np.max(list(bet_cent.values()))}")
 
 
-def shortest_path_lengths_connected(graph):
+def get_shortest_path_lengths_connected(graph):
     '''get the shortest path lengths and the average
     shortest path lengths for the largest component of
     the directed graph only + make a histogram.
@@ -169,7 +176,7 @@ def shortest_path_lengths_connected(graph):
     print("The diameter of the graph is:\n\t{} m".format(np.max(short_path_length)))
 
 
-def shortest_path_lengths_not_connected(graph):
+def get_shortest_path_lengths_not_connected(graph):
     ''' iterate through list of all connected
     components in a graph to get some analysis
     insights.
@@ -209,36 +216,33 @@ def get_total_channel_length(graph):
     total_length = 0
     for (s, e) in graph.edges:
         total_length += graph[s][e]['weight']
-    print("The total length of all channels in the network of the study area is:\n\t{} m".format(round(total_length, 2)))
+    # print("The total length of all channels in the network of the study area is:\n\t{} m".format(round(total_length, 2)))
+    return round(total_length, 2)
 
 
 def do_analysis(graph):
-    # general info on number of edges and nodes
-    print(nx.info(graph))
     # get sinks and sources
-    sink_source_analysis(graph)
+    sinks, sources = analyze_sinks_sources(graph)
     # number of connected components
-    connected_comp_analysis(graph)
-    # average shortest path lengths
-    # for all:
-    shortest_path_lengths_not_connected(graph)
-    # for largest component only:
-    shortest_path_lengths_connected(graph)
-    # betweenness centrality
-    betweenness_centrality(graph)
+    connected_comp = analyze_connected_comp(graph)
     # network density
-    network_density(graph)
+    e_pot, dens = get_network_density(graph)
     # length of all channels in the network
-    get_total_channel_length(graph)
-    print("_______________________")
+    total_channel_length = get_total_channel_length(graph)
+    # print(f'num edges: {graph.number_of_edges()}, num nodes: {graph.number_of_nodes()}')
+    return graph.number_of_edges(), graph.number_of_nodes(), connected_comp, sinks, sources, e_pot, dens, total_channel_length
 
 
 if __name__ == '__main__':
     startTime = datetime.now()
 
-    edgelist = sys.argv[1]
-    npy = sys.argv[2]
-    dict_avg = sys.argv[3]
+    # edgelist = sys.argv[1]
+    # npy = sys.argv[2]
+    # dict_avg = sys.argv[3]
+
+    edgelist = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009.edgelist'
+    npy = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_node-coords.npy'
+    dict_avg = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_avg_2009.pkl'
 
     # read in 2009 data
     G_09, coord_dict_09 = read_graph(edgelist_loc=edgelist,
@@ -246,9 +250,14 @@ if __name__ == '__main__':
 
     transect_dict_fitted_2009 = load_obj(dict_avg)
 
-    add_params_graph(G_09, transect_dict_fitted_2009)
+    add_params_to_graph(G_09, transect_dict_fitted_2009)
 
-    do_analysis(G_09)
+    number_of_edges, number_of_nodes, connected_comp, sinks, sources, e_pot, dens, total_channel_length = do_analysis(G_09)
+
+    with open('E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graph_info/graph_2009.csv', 'w', newline='') as myfile:
+        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+        wr.writerow(['name', 'number_of_edges', 'number_of_nodes', 'connected_comp', 'sinks', 'sources', 'voronoi_edges', 'graph_density', 'total_channel_length_m'])
+        wr.writerow(['arf_2009', number_of_edges, number_of_nodes, connected_comp, sinks, sources, e_pot, dens, total_channel_length])
 
     print(datetime.now() - startTime)
     plt.show()

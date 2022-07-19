@@ -6,20 +6,23 @@ from PIL import Image
 import sys
 import scipy
 import scipy.ndimage
-from skimage.morphology import skeletonize, medial_axis, skeletonize_3d
+from skimage.morphology import skeletonize, skeletonize_3d
 from scipy.ndimage.morphology import generate_binary_structure
 import sknw
-import matplotlib.pyplot as plt
 import networkx as nx
 from scipy import ndimage
+import gdal
+from osgeo import gdal_array
+from affine import Affine
 from datetime import datetime
 
 startTime = datetime.now()
 
 np.set_printoptions(threshold=sys.maxsize)
 
+
 def read_data(img):
-    ''' helper function to make reading in DEMs easier '''
+    ''' helper function to make reading in DTMs easier '''
     img1 = Image.open(img)
     img1 = np.array(img1)
     return img1
@@ -31,26 +34,26 @@ def scale_data(img):
     return img_orig
 
 
-def int_conversion(img):
+def convert_to_int(img):
     '''convert to 8bit int'''
     img = img.astype(int)
     img = img.astype('uint8')
     return img
 
 
-def detrender(dem, trend_size):
-    ''' detrend the DEM image based on a filter
+def detrend_dtm(dtm, trend_size):
+    ''' detrend the DTM image based on a filter
     of size trend_size.
-    returns microtopography of DEM'''
-    subset = dem[:, :]
+    returns microtopography of DTM'''
+    subset = dtm[:, :]
     reg_trend = ndimage.uniform_filter(subset, size=trend_size)
     microtop = subset - reg_trend
     microtop = scale_data(microtop)
-    microtop = int_conversion(microtop)
+    microtop = convert_to_int(microtop)
     return microtop
 
 
-def small_cluster_elim(in_img, cluster_size):
+def eliminate_small_clusters(in_img, cluster_size):
     ''' determine the number of distinct features.
     Prepares for then eliminating those clusters with
     < n pixels (to remove potential noise)
@@ -91,7 +94,7 @@ def small_cluster_elim(in_img, cluster_size):
     return result
 
 
-def make_directed(graph, dem):
+def make_directed(graph, dtm):
     """ convert graph from nx.Graph()
     to nx.DiGraph() - for each edge (u, v)
     an edge (v, u) is generated.
@@ -101,7 +104,7 @@ def make_directed(graph, dem):
 
     :param graph: graph generated from
     skeleton of class nx.Graph
-    :param dem: original digital elevation
+    :param dtm: original digital elevation
     model (same extent as detrended image,
     as we're working with pixel indices,
     not spatial coordinates
@@ -120,8 +123,8 @@ def make_directed(graph, dem):
 
         # now remove all (s, e) edges, where s downslope of e
         # (so remove directed edges that would flow upwards...)
-        elev_start = dem[int(G_help.nodes()[s]['o'][0]), int(G_help.nodes()[s]['o'][1])]
-        elev_end = dem[int(G_help.nodes()[e]['o'][0]), int(G_help.nodes()[e]['o'][1])]
+        elev_start = dtm[int(G_help.nodes()[s]['o'][0]), int(G_help.nodes()[s]['o'][1])]
+        elev_end = dtm[int(G_help.nodes()[e]['o'][0]), int(G_help.nodes()[e]['o'][1])]
         if elev_start < elev_end:
             G_d.remove_edge(s, e)
     return G_d
@@ -151,8 +154,6 @@ def get_node_coord_dict(graph):
 
 
 def save_graph_with_coords(graph, dict, location):
-
-    print('Call save_graph')
     ''' save graph as edgelist to disk
     and coords for nodes as dictionary
 
@@ -171,163 +172,125 @@ def save_graph_with_coords(graph, dict, location):
     np.save(fname, dict)
 
 
-def make_process_plot(img_orig, img_det, thresh2, thresh_unclustered, closed, img_skel, skel_clu_elim_25, skel_transp,
-                      save_loc):
-    ''' plot the 7 substeps of the
-    analysis in one plot
+def write_geotiff(out_ds_path, arr, in_ds):
+    ''' takes an np.array with pixel coordinates and
+    gives it the projection of another raster.
+    np.array must have same extent as georeferenced
+    raster.
+
+    :param out_ds_path: string of path and filename
+    where to save the newly georeferenced raster (tif).
+    :param arr: the array to georeference
+    :param in_ds: the already georeferenced dataset
+    that serves as reference for the arr to geore-
+    ference.
+    :return NA: function just for saving
     '''
-    fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(10, 10), sharex='all', sharey='all')
-
-    # DTM
-    axs[0, 0].imshow(img_orig, cmap='Greens')
-
-    # detrended DEM
-    axs[0, 1].imshow(img_det, cmap='Greens_r')
-
-    # binarized segmentation
-    axs[1, 0].imshow(thresh2, cmap='binary')
-
-    # unclustered seg
-    axs[1, 1].imshow(thresh_unclustered, cmap='binary')
-
-    # morph. closed
-    axs[2, 0].imshow(closed, cmap='binary')
-
-    # skeleton
-    axs[2, 1].imshow(img_skel, cmap='binary')
-
-    # unclustered skel
-    axs[3, 0].imshow(skel_clu_elim_25, cmap='binary')
-
-    # skel. on detr. DEM
-    axs[3, 1].imshow(img_det, cmap='gray')
-    axs[3, 1].imshow(skel_transp)
-
-    plt.setp(plt.gcf().get_axes(), xticks=[], yticks=[])
-    plt.savefig(save_loc, dpi=900, bbox_inches='tight', pad_inches=0)
-
-def save_all_substeps(img_orig, img_det, thresh2, thresh_unclustered, closed, img_skel, skel_clu_elim_25, skel_transp):
-    # original DTM
-    # img_orig = Image.fromarray(img_orig)
-    # img_orig.save("./figures/substeps/img_orig.png")
-    # detrended DTM
-    # TODO savesubsteps
-    img_det = Image.fromarray(img_det)
-    img_det.save("./figures/substeps/img_det.png")
-    # thresholded
-    thresh2 = Image.fromarray(thresh2)
-    thresh2.save("./figures/substeps/thresh2.png")
-    # thresh_unclustered
-    thresh_unclustered = Image.fromarray(thresh_unclustered)
-    thresh_unclustered.save("./figures/substeps/thresh_unclustered.png")
-    # closed
-    closed = Image.fromarray(closed)
-    closed.save("./figures/substeps/closed.png")
-    # img_skel
-    img_skel = Image.fromarray(img_skel)
-    img_skel.save("./figures/substeps/img_skel.png")
-    # thresholded
-    skel_clu_elim_25 = Image.fromarray(skel_clu_elim_25)
-    skel_clu_elim_25.save("./figures/substeps/skel_clu_elim_25.png")
-    # thresholded
-    skel_transp = Image.fromarray(skel_transp)
-    skel_transp.save("./figures/substeps/skel_transp.png")
-
-
-def do_analysis(yearFile):
-    its = 2
-
-    print(yearFile)
-
-    if '2009' in yearFile :
-        img_orig = read_data(yearFile)
-        its = 1
-    elif '2019' in yearFile :
-        img_orig = read_data(yearFile)
-        its = 2
+    if arr.dtype == np.float32:
+        arr_type = gdal.GDT_Float32
     else:
-        print('we do not have data from this year. please select a different year (i.e., 2009, 2019).')
+        arr_type = gdal.GDT_Int32
+
+    driver = gdal.GetDriverByName("GTiff")
+    out_ds = driver.Create(out_ds_path, arr.shape[1], arr.shape[0], 1, arr_type)
+    print(in_ds.GetProjection())
+    out_ds.SetProjection(in_ds.GetProjection())
+    out_ds.SetGeoTransform(in_ds.GetGeoTransform())
+    band = out_ds.GetRasterBand(1)
+    band.WriteArray(arr)
+    band.FlushCache()
+
+
+def get_graph_from_dtm(raster_ds_path):
+    ''' takes a georeferneced digital terrain
+    model and with some image processing extracts
+    the graph of the polygonal trough networks in
+    the landscape.
+
+    :param raster_ds_path: string of path and filename
+    of a gereferenced DTM showing permafrost tundra
+    landscapes characterized by polygonal patterned
+    ground. High-centered polygons only.
+    :return H: nx.DiGraph with nodes representing the
+    trough intersections and edges represetning the
+    troughs. Each edge further has information on the
+    exact course of the trough in pixels/
+    :return dictio: dictionary containing information
+    on the edge parameters of H.
+    '''
+    # read in digital terrain model. once as georeferenced
+    # raster, once as spatial-less np.array.
+    dtm = gdal.Open(raster_ds_path)
+    dtm_np = gdal_array.LoadFile(raster_ds_path)
 
     # detrend the image to return microtopographic image only
-    img_det = detrender(img_orig, 16)
-    # save microtopographic image for later use
-    im = Image.fromarray(img_det)
-    if '2009' in yearFile:
-        im.save("arf_microtopo_2009.tif")
-    elif '2019' in yearFile:
-        im.save("arf_microtopo_2019.tif")
+    img_det = detrend_dtm(dtm_np, 16)
+    # # save microtopographic image for later use
+    # write_geotiff('E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/figures/outputs/arf_microtopo_2009.tif', img_det, dtm)
 
     # doing adaptive thresholding on the input image
     thresh2 = cv2.adaptiveThreshold(img_det, img_det.max(), cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,
                                     133, 11)
-    thresh_unclustered = small_cluster_elim(thresh2, 15)
+    thresh_unclustered = eliminate_small_clusters(thresh2, 15)
 
     # erode and dilate the features to deal with white noise.
-    kernel = np.ones((5, 5), np.uint8)
+    kernel = np.ones((3, 3), np.uint8)
+    its = 2
     for i in range(1):
-        img = cv2.dilate(np.uint8(thresh_unclustered), kernel, iterations=its)
-        closed = cv2.erode(img, kernel, iterations=1)
+        img = cv2.dilate(np.float32(thresh_unclustered), kernel, iterations=its)
+        closed = cv2.erode(img, kernel, iterations=its)
+    print(closed)
 
     # prepare for both possible skeletonization algorithms
-    zhang = skeletonize(img)
+    # zhang = skeletonize(img)
     lee = skeletonize_3d(img)
 
     img_skel = lee
 
-    # then eliminate small clusters < 25 pixels total (aka noise)
-    skel_clu_elim_25 = small_cluster_elim(img_skel, 25)
+    skel_clu_elim_25 = eliminate_small_clusters(img_skel, 10)
 
-    im = Image.fromarray(skel_clu_elim_25)
-
-    # make a transparent raster with only trough pixels in red.
-    skel_transp = np.zeros((skel_clu_elim_25.shape[0], skel_clu_elim_25.shape[1], 4))
-    for i in range(skel_clu_elim_25.shape[0]):
-        for j in range(skel_clu_elim_25.shape[1]):
-            if skel_clu_elim_25[i, j] == 1:
-                skel_transp[i, j, 0] = 255
-                skel_transp[i, j, 1] = 255
-                skel_transp[i, j, 2] = 255
-                skel_transp[i, j, 3] = 255
+    # write_geotiff('E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/figures/outputs/skel_test_2009.tif',
+    #     skel_clu_elim_25, dtm)
 
     # build graph from skeletonized image
     G = sknw.build_sknw(skel_clu_elim_25, multi=False)
 
-    # need to avoid np.arrays - so we convert it to a list
     for (s, e) in G.edges():
         G[s][e]['pts'] = G[s][e]['pts'].tolist()
 
+    geot = dtm.GetGeoTransform()
+    fwd = Affine.from_gdal(*geot)
+    G_copy = G.copy()
+
+    # transform the pixel coordinates to lat/lon for geospatialness
+    for (s, e) in G_copy.edges():
+        for i in G[s][e]['pts']:
+            tfrm = fwd * (i[0], i[1])
+            i[0] = tfrm[0]
+            i[1] = tfrm[1]
+        print(G[s][e]['pts'])
+
     # and make it a directed graph, since water only flows downslope
-    # flow direction is based on elevation information of DEM heights
-    dem = img_orig
-    H = make_directed(G, dem)
+    # flow direction is based on elevation information of DTM heights
+    H = make_directed(G, dtm_np)
 
     # save graph and node coordinates
     dictio = get_node_coord_dict(H)
 
-    if '2009' in yearFile:
-        save_graph_with_coords(H, dictio, 'arf_graph_2009')
-    elif '2019' in yearFile:
-        save_graph_with_coords(H, dictio, 'arf_graph_2019')
+    save_graph_with_coords(H, dictio, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009')
 
-    plt.figure(figsize=(2.5, 2), dpi=300)
-    plt.imshow(img_det, cmap='Greens_r', alpha=0.7)
-    plt.imshow(skel_transp, cmap='ocean')
-    plt.axis('off')
-    plt.savefig("skel_transp_on_img_det.png", bbox_inches='tight')
-    # if year == 2019:
-    #     save_all_substeps(img_orig, img_det, thresh2, thresh_unclustered, closed, img_skel, skel_clu_elim_25, skel_transp)
+    dtm = None
     return H, dictio
 
 
 if __name__ == '__main__':
-    plt.figure()
+    # @Jonathan: hier will ich nun entweder eine einzelne file analysieren,
+    # oder eben eine liste oder alle dateien aus einem directory.
+    # wie mache ich das am besten mit sys.argv?
+    raster_ds_path = sys.argv[1]
 
-    yearFile = sys.argv[1]
-
-    # H_09, dictio_09 = do_analysis(2009)
-    # Hier für sys ars nehmen und in NF dafür values übergeben
-    H_19, dictio_19 = do_analysis(yearFile)
+    raster_ds_path = r'E:\02_macs_fire_sites\00_working\03_code_scripts\IWD_graph_analysis\data\arf_dtm_2009.tif'
+    H, dictio = get_graph_from_dtm(raster_ds_path)
 
     # print time needed for script execution
     print(datetime.now() - startTime)
-    plt.show()

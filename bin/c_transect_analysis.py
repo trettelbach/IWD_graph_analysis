@@ -59,6 +59,7 @@ def inner(key, val, out_key):
 
     # check if there's a transect to fit in the first place
     # (some transects at the image edge/corner might be empty) --> but there are none
+    # print(val[0])
     if len(val[0]) != 0:
         # flip the transect along x-axis to be able to fit the Gaussian
         data = val[0] * (-1) + np.max(val[0])
@@ -96,25 +97,33 @@ def inner(key, val, out_key):
             val.append(fwhm_gauss)
             val.append(max_gauss)
             val.append(cod_gauss)
+            # print('val: ', val)
+            # print(val[0])
+            # print(val[1])
+            # print(val[2])
+            # print(val[3])
+            # print(val[4])
+            # print("-----------")
 
-            plotting=True
-            if key[0]==15 and key[1]==610:
-                plt.plot(t, data, '+:', label='DTM elevation', color='darkslategrey')
-                plt.plot(t, data_gauss_fit, color='lightseagreen',
-                         label='fitted Gaussian')
-                # , d={0}, w={1}, r2={2}'.format(round(max_gauss, 2),
-                #                                                                     round(fwhm_gauss, 2),
-                #                                                                     round(cod_gauss, 2)
-                plt.legend(frameon=False)
-                plt.ylabel("depth below ground [m]")
-                plt.xlabel("transect length [m]")
-                plt.xticks(np.arange(9), np.arange(1, 10))
-                plt.text(0, 0.25, f'trough width: {round(fwhm_gauss, 2)} m', fontsize=8)
-                plt.text(0, 0.235, f'trough depth: {round(max_gauss, 2)} m', fontsize=8)
-                plt.text(0, 0.22, f'$r^2$ of fit: {round(cod_gauss, 2)}', fontsize=8)
-                # plt.title("direction: {0}, category: {1}".format(val[2], val[3]))
-                plt.savefig('./figures/fitted_to_coords_{0}_{1}.png'.format(key[0], key[1]), dpi=300)
-                plt.close()
+
+            # plotting=True
+            # if key[0]==15 and key[1]==610:
+            #     plt.plot(t, data, '+:', label='DTM elevation', color='darkslategrey')
+            #     plt.plot(t, data_gauss_fit, color='lightseagreen',
+            #              label='fitted Gaussian')
+            #     # , d={0}, w={1}, r2={2}'.format(round(max_gauss, 2),
+            #     #                                                                     round(fwhm_gauss, 2),
+            #     #                                                                     round(cod_gauss, 2)
+            #     plt.legend(frameon=False)
+            #     plt.ylabel("depth below ground [m]")
+            #     plt.xlabel("transect length [m]")
+            #     plt.xticks(np.arange(9), np.arange(1, 10))
+            #     plt.text(0, 0.25, f'trough width: {round(fwhm_gauss, 2)} m', fontsize=8)
+            #     plt.text(0, 0.235, f'trough depth: {round(max_gauss, 2)} m', fontsize=8)
+            #     plt.text(0, 0.22, f'$r^2$ of fit: {round(cod_gauss, 2)}', fontsize=8)
+            #     # plt.title("direction: {0}, category: {1}".format(val[2], val[3]))
+            #     plt.savefig('./figures/fitted_to_coords_{0}_{1}.png'.format(key[0], key[1]), dpi=300)
+            #     plt.close()
         except:
             # bad error handling:
             if val[4]:
@@ -122,7 +131,10 @@ def inner(key, val, out_key):
             else:
                 print("something seriously wrong")
     else:
-        print(val)
+        # print(val)
+        print("boooooo")
+
+    return val
 
 
 def outer(out_key, inner_dict):
@@ -192,6 +204,7 @@ def fit_gaussian_parallel(dict_soil):
         all_outer_keys.append(out_key)
     # and recombine them with the updated inner_dict
     dict_soil2 = dict(zip(all_outer_keys, out))
+    print(dict_soil2)
     return dict_soil2
 
 
@@ -215,6 +228,8 @@ def get_trough_avgs_gauss(transect_dict_fitted):
     '''
     mean_trough_params = {}
     empty_edges = []
+
+    # print(transect_dict_fitted)
     # iterate through all edges/troughs
     for edge, trough in transect_dict_fitted.items():
         num_trans_tot = len(trough)  # get the total number of transects in one edge/trough
@@ -227,6 +242,7 @@ def get_trough_avgs_gauss(transect_dict_fitted):
         if trough != {}:
             # then iterate through all transects of the current edge/trough
             for coords, trans in trough.items():
+                # print(coords)
                 # filter out all transects that:
                     # a) are not between 0 m and 15 m in width (unrealistic values)
                     # b) have been fitted with r2 <= 0.8
@@ -806,23 +822,23 @@ def do_analysis(transectFile, fit_gaussian=True):
 
     # 2019
     if fit_gaussian:
-        transect_dict_19 = load_obj(transectFile)
-        transect_dict_fitted_19 = fit_gaussian_parallel(transect_dict_19)
-        save_obj(transect_dict_fitted_19, 'arf_transect_dict_fitted_2019')
+        transect_dict = load_obj(transectFile)
+        transect_dict_fitted = fit_gaussian_parallel(transect_dict)
+        save_obj(transect_dict_fitted, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_fitted_2009')
 
-    transect_dict_fitted_19 = load_obj('arf_transect_dict_fitted_2019.pkl')
-    edge_param_dict_19 = get_trough_avgs_gauss(transect_dict_fitted_19)
-    save_obj(edge_param_dict_19, 'arf_transect_dict_avg_2019')
+    transect_dict_fitted = load_obj('E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_fitted_2009.pkl')
+    edge_param_dict = get_trough_avgs_gauss(transect_dict_fitted)
+    save_obj(edge_param_dict, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_avg_2009')
 
-    return transect_dict_fitted_19, edge_param_dict_19
+    return transect_dict_fitted, edge_param_dict
 
 
 if __name__ == '__main__':
 
+    # pkl = sys.argv[1]
+    pkl = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_2009.pkl'
 
-    pkl = sys.argv[1]
-
-    transect_dict_fitted_19, edge_param_dict_19 = do_analysis(pkl, True)
+    transect_dict_fitted, edge_param_dict = do_analysis(pkl, True)
 
     # plot_param_hists_box_width(transect_dict_fitted_09, transect_dict_fitted_19)
     # plot_param_hists_box_depth(transect_dict_fitted_09, transect_dict_fitted_19)

@@ -1,0 +1,2 @@
+"name","number_of_edges","number_of_nodes","connected_comp","sinks","sources","voronoi_edges","graph_density","total_channel_length_m"
+"arf_2009","1465","1674","Counter({1: 348, 3: 36, 2: 8, 5: 5, 10: 2, 7: 2, 880: 1, 4: 1, 12: 1, 21: 1, 9: 1, 8: 1})","574","651","2512.5","0.5830845771144278","16688.16"

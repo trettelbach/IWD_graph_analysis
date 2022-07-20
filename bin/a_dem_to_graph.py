@@ -130,7 +130,7 @@ def make_directed(graph, dtm):
     return G_d
 
 
-def get_node_coord_dict(graph):
+def get_node_coord_dict(graph, fwd):
     ''' create dictionary with node ID as key
     and node coordinates as values
 
@@ -142,6 +142,15 @@ def get_node_coord_dict(graph):
     nodes = graph.nodes()
     # get pixel coordinates of nodes --> ps
     ps = np.array([nodes[i]['o'] for i in nodes])
+    print(ps)
+    for i in ps:
+        # print(i)
+        # print('0000')
+        # tfrm = fwd * (i[0], i[1])
+        tfrm = fwd * (i[1], i[0])
+        i[0] = tfrm[0]
+        i[1] = tfrm[1]
+    print(ps)
     # get node ID --> keys
     keys = list(range(len(nodes)))
     keys_str = []
@@ -239,7 +248,7 @@ def get_graph_from_dtm(raster_ds_path):
     for i in range(1):
         img = cv2.dilate(np.float32(thresh_unclustered), kernel, iterations=its)
         closed = cv2.erode(img, kernel, iterations=its)
-    print(closed)
+    # print(closed)
 
     # prepare for both possible skeletonization algorithms
     # zhang = skeletonize(img)
@@ -259,6 +268,7 @@ def get_graph_from_dtm(raster_ds_path):
         G[s][e]['pts'] = G[s][e]['pts'].tolist()
 
     geot = dtm.GetGeoTransform()
+    print(geot)
     fwd = Affine.from_gdal(*geot)
     G_copy = G.copy()
 
@@ -268,14 +278,14 @@ def get_graph_from_dtm(raster_ds_path):
             tfrm = fwd * (i[0], i[1])
             i[0] = tfrm[0]
             i[1] = tfrm[1]
-        print(G[s][e]['pts'])
+        # print(G[s][e]['pts'])
 
     # and make it a directed graph, since water only flows downslope
     # flow direction is based on elevation information of DTM heights
     H = make_directed(G, dtm_np)
 
     # save graph and node coordinates
-    dictio = get_node_coord_dict(H)
+    dictio = get_node_coord_dict(H, fwd)
 
     save_graph_with_coords(H, dictio, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009')
 
@@ -287,7 +297,7 @@ if __name__ == '__main__':
     # @Jonathan: hier will ich nun entweder eine einzelne file analysieren,
     # oder eben eine liste oder alle dateien aus einem directory.
     # wie mache ich das am besten mit sys.argv?
-    raster_ds_path = sys.argv[1]
+    # raster_ds_path = sys.argv[1]
 
     raster_ds_path = r'E:\02_macs_fire_sites\00_working\03_code_scripts\IWD_graph_analysis\data\arf_dtm_2009.tif'
     H, dictio = get_graph_from_dtm(raster_ds_path)

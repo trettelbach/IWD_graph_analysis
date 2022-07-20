@@ -33,7 +33,7 @@ def add_params_to_graph(G, edge_param_dict):
         - median r2
         - ratio of considered transects/trough
         - ratio of water-filled troughs
-    :return : graph with added edge_param_dict
+    :return G_upd: graph with added edge_param_dict
     parameters added as edge weights.
     '''
     num_emp = 0
@@ -59,6 +59,7 @@ def add_params_to_graph(G, edge_param_dict):
             # probably all of the missing ones are those too close to the image border and thus don't have any transects
             num_emp += 1
     print(f'empty edges: {num_emp}, full edges: {num_full}')
+    return G
 
 
 def analyze_sinks_sources(graph):
@@ -250,7 +251,11 @@ if __name__ == '__main__':
 
     transect_dict_fitted_2009 = load_obj(dict_avg)
 
-    add_params_to_graph(G_09, transect_dict_fitted_2009)
+    G_upd = add_params_to_graph(G_09, transect_dict_fitted_2009)
+    nx.write_edgelist(G_upd, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_avg_weights.edgelist', data=True, delimiter=';')
+                      # data=(('pts', list), ('weight', int), ('mean_width', float), ('median_width', float),
+                      #             ('mean_depth', float), ('median_depth', float), ('mean_r2', float), ('median_r2', float),
+                      #             ('considered_trans', int), ('water_filled', bool)))
 
     number_of_edges, number_of_nodes, connected_comp, sinks, sources, e_pot, dens, total_channel_length = do_analysis(G_09)
 

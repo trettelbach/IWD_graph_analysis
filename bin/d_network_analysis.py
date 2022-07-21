@@ -237,13 +237,13 @@ def do_analysis(graph):
 if __name__ == '__main__':
     startTime = datetime.now()
 
-    # edgelist = sys.argv[1]
-    # npy = sys.argv[2]
-    # dict_avg = sys.argv[3]
+    edgelist = sys.argv[1]
+    npy = sys.argv[2]
+    dict_avg = sys.argv[3]
 
-    edgelist = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009.edgelist'
-    npy = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_node-coords.npy'
-    dict_avg = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_avg_2009.pkl'
+    # edgelist = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009.edgelist'
+    # npy = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_node-coords.npy'
+    # dict_avg = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_avg_2009.pkl'
 
     # read in 2009 data
     G_09, coord_dict_09 = read_graph(edgelist_loc=edgelist,

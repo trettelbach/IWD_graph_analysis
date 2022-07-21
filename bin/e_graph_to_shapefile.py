@@ -99,24 +99,27 @@ def create_line_shp_edges(edge_info_df, save_loc_shp):
 if __name__ == '__main__':
     startTime = datetime.now()
 
-    # edgelist = sys.argv[1]
-    # npy = sys.argv[2]
+    edgelist = sys.argv[1]
+    npy = sys.argv[2]
+    shp_loc = sys.argv[3]
+    weighted_graph_edgelist = sys.argv[4]
+    csv_loc = sys.argv[5]
 
-    edgelist = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009.edgelist'
-    npy = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_node-coords.npy'
+    # edgelist = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009.edgelist'
+    # npy = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_node-coords.npy'
 
     # read in 2009 data
     G, coord_dict = read_graph(edgelist_loc=edgelist, coord_dict_loc=npy)
 
     # generate point-shapefile from nodes.
-    shp_loc = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/gis/'
-    create_point_shp_nodes(coord_dict, shp_loc + 'nodes_2009.shp')
+    # shp_loc = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/gis/'  # where to save
+    create_point_shp_nodes(coord_dict, shp_loc + 'nodes.shp')
 
     # prepare for shapefiling edges
-    weighted_graph_edgelist = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_avg_weights.edgelist'
-    csv_loc = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/gis/edge_csv.csv'
+    # weighted_graph_edgelist = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_avg_weights.edgelist'
+    # csv_loc = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/gis/edge_csv.csv'
     get_edge_info_csv(weighted_graph_edgelist, csv_loc)
 
     # shapefile edges
     edge_info_df = add_coords_to_edge_id(csv_loc, coord_dict)
-    create_line_shp_edges(edge_info_df, shp_loc + 'edges_2009.shp')
+    create_line_shp_edges(edge_info_df, shp_loc + 'edges.shp')

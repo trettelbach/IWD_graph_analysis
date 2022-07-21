@@ -4,6 +4,7 @@ include { demToGraph } from './scripts/demToGraph'
 include { extractTroughTransects } from './scripts/extractTroughTransects'
 include { transectAnalysis } from './scripts/transectAnalysis'
 include { networkAnalysis } from './scripts/networkAnalysis'
+include { graphToShapefile } from './scripts/graphToShapefile'
 
 
 
@@ -11,8 +12,6 @@ include { networkAnalysis } from './scripts/networkAnalysis'
 workflow {
 
     data = Channel.fromPath( 'data/*dtm*.tif' ).view { "value: $it" }
-
-
 
     //py_path3 = Channel.fromPath('${params.maindir}/interpol_net_goce_simple.py')
     //py_path4 = Channel.fromPath('${params.maindir}/interpol_net_goce_simple_finetune.py')
@@ -22,6 +21,8 @@ workflow {
     extractTroughTransects(demToGraph.out)
     transectAnalysis(extractTroughTransects.out)
     networkAnalysis(demToGraph.out.edgelist, demToGraph.out.npy, transectAnalysis.out)
+    graphToShapefile(demToGraph.out.edgelist, demToGraph.out.npy, './data/gis/', transectAnalysis.out, './data/gis/edge_csv.csv')
+
 
     //preprocessing2.out.view()
     //interpol(preprocessing2.out(),py_path3)

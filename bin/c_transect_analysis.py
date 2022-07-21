@@ -835,15 +835,10 @@ def do_analysis(transectFile, fit_gaussian=True):
 
 if __name__ == '__main__':
 
-    # pkl = sys.argv[1]
-    pkl = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_2009.pkl'
+    pkl = sys.argv[1]
+    # pkl = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_2009.pkl'
 
     transect_dict_fitted, edge_param_dict = do_analysis(pkl, True)
-
-    # plot_param_hists_box_width(transect_dict_fitted_09, transect_dict_fitted_19)
-    # plot_param_hists_box_depth(transect_dict_fitted_09, transect_dict_fitted_19)
-    # plot_param_hists_box_cod(transect_dict_fitted_09, transect_dict_fitted_19)
-    # plot_legend(transect_dict_fitted_09, transect_dict_fitted_19)
 
     print(datetime.now() - startTime)
 

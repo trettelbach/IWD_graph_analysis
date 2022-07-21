@@ -297,9 +297,9 @@ if __name__ == '__main__':
     # @Jonathan: hier will ich nun entweder eine einzelne file analysieren,
     # oder eben eine liste oder alle dateien aus einem directory.
     # wie mache ich das am besten mit sys.argv?
-    # raster_ds_path = sys.argv[1]
+    raster_ds_path = sys.argv[1]
 
-    raster_ds_path = r'E:\02_macs_fire_sites\00_working\03_code_scripts\IWD_graph_analysis\data\arf_dtm_2009.tif'
+    # raster_ds_path = r'E:\02_macs_fire_sites\00_working\03_code_scripts\IWD_graph_analysis\data\arf_dtm_2009.tif'
     H, dictio = get_graph_from_dtm(raster_ds_path)
 
     # print time needed for script execution

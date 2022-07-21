@@ -405,13 +405,13 @@ def do_analysis(edgelistFile, npyFile, dtmTifFile):
 if __name__ == '__main__':
     startTime = datetime.now()
 
-    # edgelistFile = sys.argv[3]
-    # npyFile = sys.argv[1]
-    # dtmTifFile = sys.argv[2]
+    edgelistFile = sys.argv[3]
+    npyFile = sys.argv[1]
+    dtmTifFile = sys.argv[2]
 
-    edgelistFile = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009.edgelist'
-    npyFile = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_node-coords.npy'
-    dtmTifFile = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/arf_dtm_2009.tif'
+    # edgelistFile = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009.edgelist'
+    # npyFile = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_node-coords.npy'
+    # dtmTifFile = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/arf_dtm_2009.tif'
 
     do_analysis(edgelistFile, npyFile, dtmTifFile)
 

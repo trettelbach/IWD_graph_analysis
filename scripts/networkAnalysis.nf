@@ -1,7 +1,7 @@
 nextflow.enable.dsl=2
 
 process networkAnalysis {
-
+    publishDir 'output/csv', mode: 'copy', pattern: '**.csv'
     container 'fondahub/iwd:latest'
 
     input:
@@ -11,7 +11,7 @@ process networkAnalysis {
 
 
     output:
-
+        path("graph_????.csv"), emit: csv
 
     script:
     """

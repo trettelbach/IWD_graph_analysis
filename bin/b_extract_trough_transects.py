@@ -391,7 +391,7 @@ def save_obj(obj, name):
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 
-def do_analysis(edgelistFile, npyFile, dtmTifFile):
+def do_analysis(edgelistFile, npyFile, dtmTifFile, year):
     H, coord_dict = read_graph(edgelist_loc=edgelistFile, coord_dict_loc=npyFile)
 
     dtm = gdal.Open(dtmTifFile)
@@ -399,7 +399,7 @@ def do_analysis(edgelistFile, npyFile, dtmTifFile):
     # extract transects of 9 meter width: (trough_width*2 + 1 == 9)
     trough_width = 4
     transect_dict = get_transects(H, dtm_np, dtm, trough_width)
-    save_obj(transect_dict, 'arf_transect_dict_2009')
+    save_obj(transect_dict, 'arf_transect_dict_'+ year)
 
 
 if __name__ == '__main__':
@@ -408,11 +408,12 @@ if __name__ == '__main__':
     edgelistFile = sys.argv[3]
     npyFile = sys.argv[1]
     dtmTifFile = sys.argv[2]
+    year = npyFile.split(".")[0].split("_")[2]
 
     # edgelistFile = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009.edgelist'
     # npyFile = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_node-coords.npy'
     # dtmTifFile = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/arf_dtm_2009.tif'
 
-    do_analysis(edgelistFile, npyFile, dtmTifFile)
+    do_analysis(edgelistFile, npyFile, dtmTifFile, year)
 
     print(datetime.now() - startTime)

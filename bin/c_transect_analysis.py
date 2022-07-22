@@ -13,6 +13,7 @@ from joblib import Parallel, delayed
 startTime = datetime.now()
 np.set_printoptions(threshold=sys.maxsize)
 
+
 def load_obj(name):
     with open(name, 'rb') as f:
         return pickle.load(f)
@@ -53,6 +54,7 @@ def inner(key, val, out_key):
     - val[6] = mean_gauss --> transect depth
     - val[7] = cod_gauss --> r2 of fit
     '''
+
     # implement the gaussian function
     def my_gaus(x, a, mu, sigma):
         return a * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2))
@@ -73,9 +75,9 @@ def inner(key, val, out_key):
 
         # provide initial guesses for the mean and sigma for fitting
         mean = np.argmax(data)  # mean is estimated to be at the maximum point of the flipped transect
-                                # (lowest point within the trough)
+        # (lowest point within the trough)
         sigma = np.sqrt(sum(data * (t - mean) ** 2) / N) + 1  # estimate for sigma is determined via the underlying data
-                                                              # + 1 to avoid division by 0 for flat transects
+        # + 1 to avoid division by 0 for flat transects
 
         # now fit the Gaussian & raise error for those that can't be fitted
         try:
@@ -97,7 +99,6 @@ def inner(key, val, out_key):
             val.append(fwhm_gauss)
             val.append(max_gauss)
             val.append(cod_gauss)
-
 
             # plotting=True
             # if key[0]==15 and key[1]==610:
@@ -237,9 +238,9 @@ def get_trough_avgs_gauss(transect_dict_fitted):
             for coords, trans in trough.items():
                 # print(coords)
                 # filter out all transects that:
-                    # a) are not between 0 m and 15 m in width (unrealistic values)
-                    # b) have been fitted with r2 <= 0.8
-                    # c) likely have water present
+                # a) are not between 0 m and 15 m in width (unrealistic values)
+                # b) have been fitted with r2 <= 0.8
+                # c) likely have water present
                 if not isinstance(trans, list):
                     pass
                 # now count number of water-filled transects per trough
@@ -253,7 +254,6 @@ def get_trough_avgs_gauss(transect_dict_fitted):
                     gaus_r2_sum.append(trans[7])
                     num_trans_cons += 1
 
-
             # to then calculate the mean/median for each parameter
             gaus_mean_width = np.mean(gaus_width_sum)
             gaus_median_width = np.median(gaus_width_sum)
@@ -262,8 +262,8 @@ def get_trough_avgs_gauss(transect_dict_fitted):
             gaus_mean_r2 = np.mean(gaus_r2_sum)
             gaus_median_r2 = np.median(gaus_r2_sum)
             # ratio of "good" transects considered for mean/median params compared to all transects available
-            perc_trans_cons = np.round(num_trans_cons/num_trans_tot, 2)
-            perc_water_fill = np.round(water/len(trough), 2)
+            perc_trans_cons = np.round(num_trans_cons / num_trans_tot, 2)
+            perc_water_fill = np.round(water / len(trough), 2)
             # add all the mean/median parameters to the inner_dict
             mean_trough_params[edge] = [gaus_mean_width, gaus_median_width,
                                         gaus_mean_depth, gaus_median_depth,
@@ -330,9 +330,9 @@ def plot_param_hists_box_width(transect_dict_orig_fitted_09, transect_dict_orig_
 
     # do the plotting
     boxplotprops_09 = {'patch_artist': True,
-             'boxprops': dict(facecolor='salmon'),
-             'flierprops': dict(marker='o', markerfacecolor='salmon', markersize=0.5, linestyle='none'),
-             'medianprops': dict(color='salmon')}
+                       'boxprops': dict(facecolor='salmon'),
+                       'flierprops': dict(marker='o', markerfacecolor='salmon', markersize=0.5, linestyle='none'),
+                       'medianprops': dict(color='salmon')}
     boxplotprops_19 = {'patch_artist': True,
                        'boxprops': dict(facecolor='teal'),
                        'flierprops': dict(marker='o', markerfacecolor='teal', markersize=0.5, linestyle='none'),
@@ -371,7 +371,6 @@ def plot_param_hists_box_width(transect_dict_orig_fitted_09, transect_dict_orig_
     axes[1].spines['left'].set_visible(False)
     axes[1].set_ylabel('2019', weight='bold')
 
-
     # histogram
     # 2009
     axes[2].hist(all_widths_09, bins=np.arange(0.0, 20.0, 0.4), range=(0, 20), histtype='step', color='peachpuff',
@@ -379,14 +378,14 @@ def plot_param_hists_box_width(transect_dict_orig_fitted_09, transect_dict_orig_
     axes[2].hist(hi_widths_09, bins=np.arange(0.0, 20.0, 0.4), range=(0, 20), histtype='step', color='salmon',
                  label=r"width ($r^2 > 0.8$)")
     axes[2].axvline(median_09, linestyle='--', color='salmon', alpha=.9, linewidth=.9,
-                 label="median = {0} m".format(np.round(median_09, 2)))
+                    label="median = {0} m".format(np.round(median_09, 2)))
     # 2019
     axes[2].hist(all_widths_19, bins=np.arange(0.0, 20.0, 0.4), range=(0, 20), histtype='step', color='powderblue',
                  label=r"width (all)")
     axes[2].hist(hi_widths_19, bins=np.arange(0.0, 20.0, 0.4), range=(0, 20), histtype='step', color='teal',
                  label=r"width ($r^2 > 0.8$)")
     axes[2].axvline(median_19, linestyle='--', color='teal', alpha=.9, linewidth=.9,
-                 label="median = {0} m".format(np.round(median_19, 2)))
+                    label="median = {0} m".format(np.round(median_19, 2)))
 
     axes[2].set_ylabel('frequency')
     axes[2].set_xlabel('width [m]')
@@ -467,9 +466,9 @@ def plot_param_hists_box_depth(transect_dict_orig_fitted_09, transect_dict_orig_
 
     # do the plotting
     boxplotprops_09 = {'patch_artist': True,
-             'boxprops': dict(facecolor='salmon'),
-             'flierprops': dict(marker='o', markerfacecolor='salmon', markersize=0.5, linestyle='none'),
-             'medianprops': dict(color='salmon')}
+                       'boxprops': dict(facecolor='salmon'),
+                       'flierprops': dict(marker='o', markerfacecolor='salmon', markersize=0.5, linestyle='none'),
+                       'medianprops': dict(color='salmon')}
     boxplotprops_19 = {'patch_artist': True,
                        'boxprops': dict(facecolor='teal'),
                        'flierprops': dict(marker='o', markerfacecolor='teal', markersize=0.5, linestyle='none'),
@@ -508,7 +507,6 @@ def plot_param_hists_box_depth(transect_dict_orig_fitted_09, transect_dict_orig_
     axes[1].spines['left'].set_visible(False)
     axes[1].set_ylabel('2019', weight='bold')
 
-
     # histogram
     # 2009
     axes[2].hist(all_depths_09, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='peachpuff',
@@ -516,14 +514,14 @@ def plot_param_hists_box_depth(transect_dict_orig_fitted_09, transect_dict_orig_
     axes[2].hist(hi_depths_09, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='salmon',
                  label=r"depth ($r^2 > 0.8$)")
     axes[2].axvline(median_09, linestyle='--', color='salmon', alpha=.9, linewidth=.9,
-                 label="median = {0} m".format(np.round(median_09, 2)))
+                    label="median = {0} m".format(np.round(median_09, 2)))
     # 2019
     axes[2].hist(all_depths_19, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='powderblue',
                  label=r"depth (all)")
     axes[2].hist(hi_depths_19, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='teal',
                  label=r"depth ($r^2 > 0.8$)")
     axes[2].axvline(median_19, linestyle='--', color='teal', alpha=.9, linewidth=.9,
-                 label="median = {0} m".format(np.round(median_19, 2)))
+                    label="median = {0} m".format(np.round(median_19, 2)))
 
     axes[2].set_ylabel('frequency')
     axes[2].set_xlabel('depth [m]')
@@ -574,7 +572,7 @@ def plot_param_hists_box_cod(transect_dict_orig_fitted_09, transect_dict_orig_fi
                 if trans_info[7] > 0.8:
                     hi_cods_09.append(trans_info[7])
 
-    print(f'{(cod_neg_09*100)/(cod_neg_09+cod_pos_09)} of all fits had a r2 < 0')
+    print(f'{(cod_neg_09 * 100) / (cod_neg_09 + cod_pos_09)} of all fits had a r2 < 0')
 
     all_cods_19 = []
     hi_cods_19 = []
@@ -593,7 +591,7 @@ def plot_param_hists_box_cod(transect_dict_orig_fitted_09, transect_dict_orig_fi
                 if trans_info[7] > 0.8:
                     hi_cods_19.append(trans_info[7])
 
-    print(f'{(cod_neg_19*100)/(cod_neg_19+cod_pos_19)} of all fits had a r2 < 0')
+    print(f'{(cod_neg_19 * 100) / (cod_neg_19 + cod_pos_19)} of all fits had a r2 < 0')
 
     # print(f'all r2: \t 2009: {len(all_cods_09)} \t 2019: {len(all_cods_19)}')
     # print(f'hi r2: \t 2009: {len(hi_cods_09)} \t 2019: {len(hi_cods_19)}')
@@ -619,9 +617,9 @@ def plot_param_hists_box_cod(transect_dict_orig_fitted_09, transect_dict_orig_fi
 
     # do the plotting
     boxplotprops_09 = {'patch_artist': True,
-             'boxprops': dict(facecolor='salmon'),
-             'flierprops': dict(marker='o', markerfacecolor='salmon', markersize=0.5, linestyle='none'),
-             'medianprops': dict(color='salmon')}
+                       'boxprops': dict(facecolor='salmon'),
+                       'flierprops': dict(marker='o', markerfacecolor='salmon', markersize=0.5, linestyle='none'),
+                       'medianprops': dict(color='salmon')}
     boxplotprops_19 = {'patch_artist': True,
                        'boxprops': dict(facecolor='teal'),
                        'flierprops': dict(marker='o', markerfacecolor='teal', markersize=0.5, linestyle='none'),
@@ -659,7 +657,6 @@ def plot_param_hists_box_cod(transect_dict_orig_fitted_09, transect_dict_orig_fi
     axes[1].spines['left'].set_visible(False)
     axes[1].set_ylabel('2019', weight='bold')
 
-
     # histogram
     # 2009
     axes[2].hist(all_cods_09, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='peachpuff',
@@ -667,14 +664,14 @@ def plot_param_hists_box_cod(transect_dict_orig_fitted_09, transect_dict_orig_fi
     axes[2].hist(hi_cods_09, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='salmon',
                  label=r"$r^2 > 0.8$")
     axes[2].axvline(median_09, linestyle='--', color='salmon', alpha=.9, linewidth=.9,
-                 label="median = {0}".format(np.round(median_09, 2)))
+                    label="median = {0}".format(np.round(median_09, 2)))
     # 2019
     axes[2].hist(all_cods_19, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='powderblue',
                  label=r"$r^2$ (all)")
     axes[2].hist(hi_cods_19, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='teal',
                  label=r"$r^2 > 0.8$")
     axes[2].axvline(median_19, linestyle='--', color='teal', alpha=.9, linewidth=.9,
-                 label="median = {0}".format(np.round(median_19, 2)))
+                    label="median = {0}".format(np.round(median_19, 2)))
 
     axes[2].set_ylabel('frequency')
     axes[2].set_xlabel(r'$r^2$')
@@ -733,9 +730,9 @@ def plot_legend(transect_dict_orig_fitted_09, transect_dict_orig_fitted_19):
 
     # do the plotting
     boxplotprops_09 = {'patch_artist': True,
-             'boxprops': dict(facecolor='salmon'),
-             'flierprops': dict(marker='o', markerfacecolor='salmon', markersize=0.5, linestyle='none'),
-             'medianprops': dict(color='salmon')}
+                       'boxprops': dict(facecolor='salmon'),
+                       'flierprops': dict(marker='o', markerfacecolor='salmon', markersize=0.5, linestyle='none'),
+                       'medianprops': dict(color='salmon')}
     boxplotprops_19 = {'patch_artist': True,
                        'boxprops': dict(facecolor='teal'),
                        'flierprops': dict(marker='o', markerfacecolor='teal', markersize=0.5, linestyle='none'),
@@ -774,7 +771,6 @@ def plot_legend(transect_dict_orig_fitted_09, transect_dict_orig_fitted_19):
     axes[1].spines['left'].set_visible(False)
     axes[1].set_ylabel('2019', weight='bold')
 
-
     # histogram
     # 2009
     axes[2].hist(all_depths_09, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='peachpuff',
@@ -782,14 +778,14 @@ def plot_legend(transect_dict_orig_fitted_09, transect_dict_orig_fitted_19):
     axes[2].hist(hi_depths_09, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='salmon',
                  label=r"transects w/ $r^2 > 0.8$")
     axes[2].axvline(median_09, linestyle='--', color='salmon', alpha=.9, linewidth=.9,
-                 label="median")
+                    label="median")
     # 2019
     axes[2].hist(all_depths_19, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='powderblue',
                  label=r"all transects")
     axes[2].hist(hi_depths_19, bins=np.arange(0.0, 1.0, 0.02), range=(0, 15), histtype='step', color='teal',
                  label=r"transects w/ $r^2 > 0.8$")
     axes[2].axvline(median_19, linestyle='--', color='teal', alpha=.9, linewidth=.9,
-                 label="median")
+                    label="median")
 
     axes[2].set_ylabel('frequency')
     axes[2].set_xlabel('depth [m]')
@@ -811,27 +807,28 @@ def plot_legend(transect_dict_orig_fitted_09, transect_dict_orig_fitted_19):
     plt.savefig('./figures/legend.png')
 
 
-def do_analysis(transectFile, fit_gaussian=True):
-
+def do_analysis(transectFile, year, fit_gaussian=True):
     # 2019
     if fit_gaussian:
         transect_dict = load_obj(transectFile)
         transect_dict_fitted = fit_gaussian_parallel(transect_dict)
-        save_obj(transect_dict_fitted, 'arf_transect_dict_fitted_2009')
+        save_obj(transect_dict_fitted, 'arf_transect_dict_fitted_' + year)
 
-    transect_dict_fitted = load_obj('arf_transect_dict_fitted_2009.pkl')
+    transect_dict_fitted = load_obj('arf_transect_dict_fitted_' + year + '.pkl')
     edge_param_dict = get_trough_avgs_gauss(transect_dict_fitted)
-    save_obj(edge_param_dict, 'arf_transect_dict_avg_2009')
+    save_obj(edge_param_dict, 'arf_transect_dict_avg_' + year)
 
     return transect_dict_fitted, edge_param_dict
 
 
 if __name__ == '__main__':
-
     pkl = sys.argv[1]
+    year = sys.argv[1].split(".")[0].split("_")[3]
+    print(year)
+
     # pkl = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_2009.pkl'
 
-    transect_dict_fitted, edge_param_dict = do_analysis(pkl, True)
+    transect_dict_fitted, edge_param_dict = do_analysis(pkl, year, True)
 
     print(datetime.now() - startTime)
 

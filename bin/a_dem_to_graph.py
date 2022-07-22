@@ -210,7 +210,7 @@ def write_geotiff(out_ds_path, arr, in_ds):
     band.FlushCache()
 
 
-def get_graph_from_dtm(raster_ds_path):
+def get_graph_from_dtm(raster_ds_path, year):
     ''' takes a georeferneced digital terrain
     model and with some image processing extracts
     the graph of the polygonal trough networks in
@@ -235,7 +235,7 @@ def get_graph_from_dtm(raster_ds_path):
     # detrend the image to return microtopographic image only
     img_det = detrend_dtm(dtm_np, 16)
     # # save microtopographic image for later use
-    write_geotiff('arf_microtopo_2009.tif', img_det, dtm)
+    write_geotiff('arf_microtopo_' + year + '.tif', img_det, dtm)
 
     # doing adaptive thresholding on the input image
     thresh2 = cv2.adaptiveThreshold(img_det, img_det.max(), cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,
@@ -287,7 +287,7 @@ def get_graph_from_dtm(raster_ds_path):
     # save graph and node coordinates
     dictio = get_node_coord_dict(H, fwd)
 
-    save_graph_with_coords(H, dictio, 'arf_graph_2009')
+    save_graph_with_coords(H, dictio, 'arf_graph_' + year)
 
     dtm = None
     return H, dictio
@@ -298,9 +298,10 @@ if __name__ == '__main__':
     # oder eben eine liste oder alle dateien aus einem directory.
     # wie mache ich das am besten mit sys.argv?
     raster_ds_path = sys.argv[1]
+    year = sys.argv[1].split(".")[0].split("_")[2]
 
     # raster_ds_path = r'E:\02_macs_fire_sites\00_working\03_code_scripts\IWD_graph_analysis\data\arf_dtm_2009.tif'
-    H, dictio = get_graph_from_dtm(raster_ds_path)
+    H, dictio = get_graph_from_dtm(raster_ds_path, year)
 
     # print time needed for script execution
     print(datetime.now() - startTime)

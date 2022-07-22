@@ -4,7 +4,9 @@ include { demToGraph } from './scripts/demToGraph'
 include { extractTroughTransects } from './scripts/extractTroughTransects'
 include { transectAnalysis } from './scripts/transectAnalysis'
 include { networkAnalysis } from './scripts/networkAnalysis'
+include { mergeAnalysisCSVs} from './scripts/mergeAnalysisCSVs'
 include { graphToShapefile } from './scripts/graphToShapefile'
+
 
 
 
@@ -21,8 +23,11 @@ workflow {
     extractTroughTransects(demToGraph.out)
     transectAnalysis(extractTroughTransects.out)
     networkAnalysis(demToGraph.out.edgelist, demToGraph.out.npy, transectAnalysis.out)
-    //graphToShapefile(demToGraph.out.edgelist, demToGraph.out.npy, './data/gis/', transectAnalysis.out, './data/gis/edge_csv.csv')
+    graphToShapefile(demToGraph.out.edgelist, demToGraph.out.npy, transectAnalysis.out)
 
+    csv = networkAnalysis.out.csv.flatten().buffer( size: Integer.MAX_VALUE, remainder: true )
+
+    mergeAnalysisCSVs(csv)
 
 
 

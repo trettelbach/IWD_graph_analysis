@@ -7,7 +7,7 @@ import networkx as nx
 import pickle
 from affine import Affine
 from osgeo import gdal_array
-import gdal
+from osgeo import gdal
 from datetime import datetime
 
 # np.set_printoptions(threshold=sys.maxsize)

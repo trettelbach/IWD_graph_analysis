@@ -11,7 +11,7 @@ from scipy.ndimage.morphology import generate_binary_structure
 import sknw
 import networkx as nx
 from scipy import ndimage
-import gdal
+from osgeo import gdal
 from osgeo import gdal_array
 from affine import Affine
 from datetime import datetime

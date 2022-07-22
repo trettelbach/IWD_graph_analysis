@@ -1,7 +1,7 @@
 # Import necessary modules
 import pandas as pd
 import geopandas as gpd
-import gdal
+from osgeo import gdal
 import ogr
 from datetime import datetime
 import matplotlib

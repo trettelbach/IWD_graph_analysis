@@ -24,8 +24,6 @@ workflow {
     graphToShapefile(demToGraph.out.edgelist, demToGraph.out.npy, './data/gis/', transectAnalysis.out, './data/gis/edge_csv.csv')
 
 
-    //preprocessing2.out.view()
-    //interpol(preprocessing2.out(),py_path3)
-    //interpol_finetune(interpol.out(),py_path4)
-    //publication(interpol_finetune.out(),py_path5)
+
+
 }

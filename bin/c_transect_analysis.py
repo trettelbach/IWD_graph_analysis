@@ -97,13 +97,6 @@ def inner(key, val, out_key):
             val.append(fwhm_gauss)
             val.append(max_gauss)
             val.append(cod_gauss)
-            # print('val: ', val)
-            # print(val[0])
-            # print(val[1])
-            # print(val[2])
-            # print(val[3])
-            # print(val[4])
-            # print("-----------")
 
 
             # plotting=True

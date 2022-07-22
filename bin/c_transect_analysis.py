@@ -817,11 +817,11 @@ def do_analysis(transectFile, fit_gaussian=True):
     if fit_gaussian:
         transect_dict = load_obj(transectFile)
         transect_dict_fitted = fit_gaussian_parallel(transect_dict)
-        save_obj(transect_dict_fitted, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_fitted_2009')
+        save_obj(transect_dict_fitted, 'arf_transect_dict_fitted_2009')
 
-    transect_dict_fitted = load_obj('E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_fitted_2009.pkl')
+    transect_dict_fitted = load_obj('arf_transect_dict_fitted_2009.pkl')
     edge_param_dict = get_trough_avgs_gauss(transect_dict_fitted)
-    save_obj(edge_param_dict, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_avg_2009')
+    save_obj(edge_param_dict, 'arf_transect_dict_avg_2009')
 
     return transect_dict_fitted, edge_param_dict
 

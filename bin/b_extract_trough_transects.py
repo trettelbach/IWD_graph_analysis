@@ -399,7 +399,7 @@ def do_analysis(edgelistFile, npyFile, dtmTifFile):
     # extract transects of 9 meter width: (trough_width*2 + 1 == 9)
     trough_width = 4
     transect_dict = get_transects(H, dtm_np, dtm, trough_width)
-    save_obj(transect_dict, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_2009')
+    save_obj(transect_dict, 'arf_transect_dict_2009')
 
 
 if __name__ == '__main__':

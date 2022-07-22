@@ -252,14 +252,14 @@ if __name__ == '__main__':
     transect_dict_fitted_2009 = load_obj(dict_avg)
 
     G_upd = add_params_to_graph(G_09, transect_dict_fitted_2009)
-    nx.write_edgelist(G_upd, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_avg_weights.edgelist', data=True, delimiter=';')
+    nx.write_edgelist(G_upd, 'arf_graph_2009_avg_weights.edgelist', data=True, delimiter=';')
                       # data=(('pts', list), ('weight', int), ('mean_width', float), ('median_width', float),
                       #             ('mean_depth', float), ('median_depth', float), ('mean_r2', float), ('median_r2', float),
                       #             ('considered_trans', int), ('water_filled', bool)))
 
     number_of_edges, number_of_nodes, connected_comp, sinks, sources, e_pot, dens, total_channel_length = do_analysis(G_09)
 
-    with open('E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graph_info/graph_2009.csv', 'w', newline='') as myfile:
+    with open('graph_2009.csv', 'w', newline='') as myfile:
         wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
         wr.writerow(['name', 'number_of_edges', 'number_of_nodes', 'connected_comp', 'sinks', 'sources', 'voronoi_edges', 'graph_density', 'total_channel_length_m'])
         wr.writerow(['arf_2009', number_of_edges, number_of_nodes, connected_comp, sinks, sources, e_pot, dens, total_channel_length])

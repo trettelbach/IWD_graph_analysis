@@ -21,7 +21,7 @@ workflow {
     extractTroughTransects(demToGraph.out)
     transectAnalysis(extractTroughTransects.out)
     networkAnalysis(demToGraph.out.edgelist, demToGraph.out.npy, transectAnalysis.out)
-    graphToShapefile(demToGraph.out.edgelist, demToGraph.out.npy, './data/gis/', transectAnalysis.out, './data/gis/edge_csv.csv')
+    //graphToShapefile(demToGraph.out.edgelist, demToGraph.out.npy, './data/gis/', transectAnalysis.out, './data/gis/edge_csv.csv')
 
 
 

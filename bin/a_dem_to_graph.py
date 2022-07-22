@@ -235,7 +235,7 @@ def get_graph_from_dtm(raster_ds_path):
     # detrend the image to return microtopographic image only
     img_det = detrend_dtm(dtm_np, 16)
     # # save microtopographic image for later use
-    # write_geotiff('E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/figures/outputs/arf_microtopo_2009.tif', img_det, dtm)
+    write_geotiff('arf_microtopo_2009.tif', img_det, dtm)
 
     # doing adaptive thresholding on the input image
     thresh2 = cv2.adaptiveThreshold(img_det, img_det.max(), cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,
@@ -258,8 +258,8 @@ def get_graph_from_dtm(raster_ds_path):
 
     skel_clu_elim_25 = eliminate_small_clusters(img_skel, 10)
 
-    # write_geotiff('E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/figures/outputs/skel_test_2009.tif',
-    #     skel_clu_elim_25, dtm)
+    #write_geotiff('skel_test_2009.tif',
+   #      skel_clu_elim_25, dtm)
 
     # build graph from skeletonized image
     G = sknw.build_sknw(skel_clu_elim_25, multi=False)
@@ -287,7 +287,7 @@ def get_graph_from_dtm(raster_ds_path):
     # save graph and node coordinates
     dictio = get_node_coord_dict(H, fwd)
 
-    save_graph_with_coords(H, dictio, 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009')
+    save_graph_with_coords(H, dictio, 'arf_graph_2009')
 
     dtm = None
     return H, dictio

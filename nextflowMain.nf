@@ -15,6 +15,13 @@ workflow {
 
     version = 2
 
+    if(params.version && params.version <= 2 && params.version >= 1) {
+        version = params.version
+    }
+
+
+
+
     data = null
 
     if (version == 2) {

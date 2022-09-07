@@ -10,4 +10,6 @@ _Remote Sens._ 2021, 13, 3098. https://doi.org/10.3390/rs13163098
 
 ## Run as Nextflow Workflow
 
+Before you start, go to nextflowMain.nf and set the version number
+
 `nextflow run nextflowMain.nf -with-docker fondahub/iwd:latest -with-report`

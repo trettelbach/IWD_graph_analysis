@@ -297,8 +297,19 @@ if __name__ == '__main__':
     # @Jonathan: hier will ich nun entweder eine einzelne file analysieren,
     # oder eben eine liste oder alle dateien aus einem directory.
     # wie mache ich das am besten mit sys.argv?
+
+    version = sys.argv[2]
+
+    year = ''
+
+    if version == '1':
+        year = sys.argv[1].split(".")[0].split("_")[2]
+    elif version == '2':
+        year = sys.argv[1].split(".")[0].split("PERMAX_")[1]
+
+
     raster_ds_path = sys.argv[1]
-    year = sys.argv[1].split(".")[0].split("_")[2]
+
 
     # raster_ds_path = r'E:\02_macs_fire_sites\00_working\03_code_scripts\IWD_graph_analysis\data\arf_dtm_2009.tif'
     H, dictio = get_graph_from_dtm(raster_ds_path, year)

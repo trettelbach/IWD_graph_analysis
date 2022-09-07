@@ -823,8 +823,14 @@ def do_analysis(transectFile, year, fit_gaussian=True):
 
 if __name__ == '__main__':
     pkl = sys.argv[1]
-    year = sys.argv[1].split(".")[0].split("_")[3]
-    print(year)
+    version = sys.argv[2]
+
+    year = ''
+
+    if version == '1':
+        year = sys.argv[1].split(".")[0].split("_")[3]
+    elif version == '2':
+        year = sys.argv[1].split(".")[0][22:]
 
     # pkl = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_transect_dict_2009.pkl'
 

@@ -5,15 +5,16 @@ process transectAnalysis {
     container 'fondahub/iwd:latest'
 
     input:
-        path pkl
+        tuple val(key), path(pkl)
+        val(version)
 
     output:
-    path "*transect_dict_avg*", emit: transect_dict_avg
+        tuple val(key), path("*transect_dict_avg*")
 
 
     script:
     """
-    c_transect_analysis.py ${pkl}
+    c_transect_analysis.py ${pkl} ${version}
     """
 
 }

@@ -5,17 +5,15 @@ process networkAnalysis {
     container 'fondahub/iwd:latest'
 
     input:
-        path edgelist
-        path npy
-        path transect_dict_avg
-
+        tuple val(key), path(tif), path(npy), path(edgelist), path(transect_dict_avg)
+        val(version)
 
     output:
-        path("graph_????.csv"), emit: csv
+        tuple val(key), path("graph_*.csv")
 
     script:
     """
-    d_network_analysis.py ${edgelist} ${npy} ${transect_dict_avg}
+    d_network_analysis.py ${edgelist} ${npy} ${transect_dict_avg} ${version}
     """
 
 }

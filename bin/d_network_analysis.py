@@ -241,7 +241,14 @@ if __name__ == '__main__':
     npy = sys.argv[2]
     dict_avg = sys.argv[3]
 
-    year = edgelist.split('.')[0].split('_')[2]
+    version = sys.argv[4]
+
+    year = ''
+
+    if version == '1':
+        year = edgelist.split('.')[0].split('_')[2]
+    elif version == '2':
+        year = edgelist.split('.')[0][16:]
 
     # edgelist = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009.edgelist'
     # npy = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_node-coords.npy'

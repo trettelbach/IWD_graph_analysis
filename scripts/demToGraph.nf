@@ -8,15 +8,15 @@ process demToGraph {
     container 'fondahub/iwd:latest'
 
     input:
-        path yearFile
+        tuple val(key), file(yearFile)
+        val(version)
+
     output:
-    path "*.tif", emit: tif
-    path "*.npy", emit: npy
-    path "*.edgelist", emit: edgelist
+    tuple val(key), path("*.tif"), path("*.npy"), path("*.edgelist")
 
     script:
     """
-    a_dem_to_graph.py ${yearFile}
+    a_dem_to_graph.py ${yearFile} ${version}
     """
 
 }

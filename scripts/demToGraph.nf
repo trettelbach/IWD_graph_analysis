@@ -4,7 +4,7 @@
 nextflow.enable.dsl=2
 
 process demToGraph {
-
+    publishDir 'output/tifs', mode: 'copy', pattern: '*.tif'
     container 'fondahub/iwd:latest'
 
     input:
@@ -12,7 +12,8 @@ process demToGraph {
         val(version)
 
     output:
-    tuple val(key), path("*.tif"), path("*.npy"), path("*.edgelist")
+    tuple val(key), path("*skel.tif"), path("*.npy"), path("*.edgelist"), emit:tup
+    path("*_?.tif")
 
     script:
     """

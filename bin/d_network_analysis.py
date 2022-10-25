@@ -237,11 +237,12 @@ def do_analysis(graph):
 if __name__ == '__main__':
     startTime = datetime.now()
 
-    edgelist = sys.argv[1]
-    npy = sys.argv[2]
-    dict_avg = sys.argv[3]
+    tif = sys.argv[1]
+    edgelist = sys.argv[2]
+    npy = sys.argv[3]
+    dict_avg = sys.argv[4]
 
-    version = sys.argv[4]
+    version = sys.argv[5]
 
     year = ''
 
@@ -269,10 +270,10 @@ if __name__ == '__main__':
 
     number_of_edges, number_of_nodes, connected_comp, sinks, sources, e_pot, dens, total_channel_length = do_analysis(G_09)
 
-    with open('graph_' + year + '.csv', 'w', newline='') as myfile:
+    with open('graph_' + tif + '.csv', 'w', newline='') as myfile:
         wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
         wr.writerow(['name', 'number_of_edges', 'number_of_nodes', 'connected_comp', 'sinks', 'sources', 'voronoi_edges', 'graph_density', 'total_channel_length_m'])
-        wr.writerow(['arf_' + year, number_of_edges, number_of_nodes, connected_comp, sinks, sources, e_pot, dens, total_channel_length])
+        wr.writerow(['arf_' + tif, number_of_edges, number_of_nodes, connected_comp, sinks, sources, e_pot, dens, total_channel_length])
 
     print(datetime.now() - startTime)
     plt.show()

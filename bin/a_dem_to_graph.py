@@ -14,6 +14,7 @@ from scipy import ndimage
 from osgeo import gdal
 from osgeo import gdal_array
 from affine import Affine
+from pathlib import Path
 from datetime import datetime
 
 startTime = datetime.now()
@@ -45,10 +46,12 @@ def detrend_dtm(dtm, trend_size):
     ''' detrend the DTM image based on a filter
     of size trend_size.
     returns microtopography of DTM'''
-    subset = dtm[:, :]
+    # there are some random nan rows and cols but they only affect the outermost rows. remove them here:
+    subset = dtm[1:-1, 1:-1]
     reg_trend = ndimage.uniform_filter(subset, size=trend_size)
     microtop = subset - reg_trend
     microtop = scale_data(microtop)
+    # adaptive threshhold (later) needs int
     microtop = convert_to_int(microtop)
     return microtop
 
@@ -142,7 +145,7 @@ def get_node_coord_dict(graph, fwd):
     nodes = graph.nodes()
     # get pixel coordinates of nodes --> ps
     ps = np.array([nodes[i]['o'] for i in nodes])
-    print(ps)
+    # print(ps)
     for i in ps:
         # print(i)
         # print('0000')
@@ -150,7 +153,7 @@ def get_node_coord_dict(graph, fwd):
         tfrm = fwd * (i[1], i[0])
         i[0] = tfrm[0]
         i[1] = tfrm[1]
-    print(ps)
+    # print(ps)
     # get node ID --> keys
     keys = list(range(len(nodes)))
     keys_str = []
@@ -202,7 +205,7 @@ def write_geotiff(out_ds_path, arr, in_ds):
 
     driver = gdal.GetDriverByName("GTiff")
     out_ds = driver.Create(out_ds_path, arr.shape[1], arr.shape[0], 1, arr_type)
-    print(in_ds.GetProjection())
+    # print(in_ds.GetProjection())
     out_ds.SetProjection(in_ds.GetProjection())
     out_ds.SetGeoTransform(in_ds.GetGeoTransform())
     band = out_ds.GetRasterBand(1)
@@ -229,12 +232,12 @@ def get_graph_from_dtm(raster_ds_path, year):
     '''
     # read in digital terrain model. once as georeferenced
     # raster, once as spatial-less np.array.
+    fname = (Path(raster_ds_path).stem)
     dtm = gdal.Open(raster_ds_path)
     dtm_np = gdal_array.LoadFile(raster_ds_path)
-
     # detrend the image to return microtopographic image only
     img_det = detrend_dtm(dtm_np, 16)
-    # # save microtopographic image for later use
+
     write_geotiff('arf_microtopo_' + year + '.tif', img_det, dtm)
 
     # doing adaptive thresholding on the input image
@@ -258,8 +261,8 @@ def get_graph_from_dtm(raster_ds_path, year):
 
     skel_clu_elim_25 = eliminate_small_clusters(img_skel, 10)
 
-    #write_geotiff('skel_test_2009.tif',
-   #      skel_clu_elim_25, dtm)
+    write_geotiff('' + fname + '_skel.tif', skel_clu_elim_25, dtm)
+
 
     # build graph from skeletonized image
     G = sknw.build_sknw(skel_clu_elim_25, multi=False)
@@ -313,6 +316,5 @@ if __name__ == '__main__':
 
     # raster_ds_path = r'E:\02_macs_fire_sites\00_working\03_code_scripts\IWD_graph_analysis\data\arf_dtm_2009.tif'
     H, dictio = get_graph_from_dtm(raster_ds_path, year)
-
     # print time needed for script execution
     print(datetime.now() - startTime)

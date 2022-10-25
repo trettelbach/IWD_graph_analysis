@@ -13,7 +13,7 @@ process networkAnalysis {
 
     script:
     """
-    d_network_analysis.py ${edgelist} ${npy} ${transect_dict_avg} ${version}
+    d_network_analysis.py ${tif} ${edgelist} ${npy} ${transect_dict_avg} ${version}
     """
 
 }

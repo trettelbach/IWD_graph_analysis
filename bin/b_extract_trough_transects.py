@@ -405,9 +405,10 @@ def do_analysis(edgelistFile, npyFile, dtmTifFile, year):
 if __name__ == '__main__':
     startTime = datetime.now()
 
+    # evtl. Fehler hier wegen der Änderungen
     edgelistFile = sys.argv[3]
-    npyFile = sys.argv[1]
-    dtmTifFile = sys.argv[2]
+    npyFile = sys.argv[2]
+    dtmTifFile = sys.argv[1]
     year = npyFile.split(".")[0].split("_")[2]
 
     version = sys.argv[4]

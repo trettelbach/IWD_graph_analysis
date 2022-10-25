@@ -5,7 +5,7 @@ process extractTroughTransects {
     container 'fondahub/iwd:latest'
 
     input:
-        tuple val(key), file(npy), file(edgelist), file(tif)
+        tuple val(key), file(tif), file(npy), file(edgelist)
         val(version)
 
     output:
@@ -13,7 +13,7 @@ process extractTroughTransects {
 
     script:
     """
-    b_extract_trough_transects.py ${edgelist} ${npy} ${tif} ${version}
+    b_extract_trough_transects.py ${tif} ${npy} ${edgelist} ${version}
     """
 
 }

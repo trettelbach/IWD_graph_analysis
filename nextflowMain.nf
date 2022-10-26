@@ -43,7 +43,11 @@ workflow {
     networkAnalysisInput = demToGraph.out.tup.join(transectAnalysis.out)
 
     networkAnalysis(networkAnalysisInput, version)
-    //graphToShapefile(demToGraph.out.edgelist, demToGraph.out.npy, transectAnalysis.out)
+
+    graphToShapefileInput = demToGraph.out.tup.join(transectAnalysis.out)
+    graphToShapefileInput.map{ it -> it.removeAt(1)}
+
+    //graphToShapefile(graphToShapefileInput)
 
     csv = networkAnalysis.out.map{it[1]}flatten().buffer( size: Integer.MAX_VALUE, remainder: true )
 

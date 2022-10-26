@@ -5,9 +5,7 @@ process graphToShapefile {
     container 'fondahub/iwd:latest'
 
     input:
-        path edgelist
-        path npy
-        path weighted_graph_edgelist
+        tuple val(key), path(npy), path(edgelist), path(weighted_graph_edgelist)
 
 
     output:

@@ -10,8 +10,8 @@ process graphToShapefile {
 
 
     output:
-        path "*nodes.shp", emit: nodes
-        path "*edges.shp", emit: edges
+        path "*nodes.*", emit: nodes
+        path "*edges.*", emit: edges
 
     script:
     """

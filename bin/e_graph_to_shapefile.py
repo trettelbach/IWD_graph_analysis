@@ -116,15 +116,20 @@ if __name__ == '__main__':
     # read in 2009 datagraph_2009.csv
     G, coord_dict = read_graph(edgelist_loc=edgelist, coord_dict_loc=npy)
 
+    aoiName = edgelist.split('.')[0].split('_')[4] + "_" + edgelist.split('.')[0].split('_')[5] + "_" + edgelist.split('.')[0].split('_')[6]
+
+
     # generate point-shapefile from nodes.
     # shp_loc = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/gis/'  # where to save
-    create_point_shp_nodes(coord_dict,year + '_nodes.shp')
+    create_point_shp_nodes(coord_dict,aoiName + '_nodes.shp')
 
     # prepare for shapefiling edges
     # weighted_graph_edgelist = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/graphs/arf_graph_2009_avg_weights.edgelist'
     # csv_loc = 'E:/02_macs_fire_sites/00_working/03_code_scripts/IWD_graph_analysis/data/gis/edge_csv.csv'
-    get_edge_info_csv(weighted_graph_edgelist, year + "edges_csv.csv")
+    get_edge_info_csv(weighted_graph_edgelist, aoiName + "_edges_csv.csv")
 
     # shapefile edges
-    edge_info_df = add_coords_to_edge_id(year + "edges_csv.csv", coord_dict)
-    create_line_shp_edges(edge_info_df, year + '_edges.shp')
+
+
+    edge_info_df = add_coords_to_edge_id(aoiName + "_edges_csv.csv", coord_dict)
+    create_line_shp_edges(edge_info_df, aoiName + '_edges.shp')

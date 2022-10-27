@@ -1,7 +1,8 @@
 nextflow.enable.dsl=2
 
 process graphToShapefile {
-
+    publishDir 'output/shp', mode: 'copy', pattern: '*_edges.*'
+    publishDir 'output/shp', mode: 'copy', pattern: '*_nodes.*'
     container 'fondahub/iwd:latest'
 
     input:

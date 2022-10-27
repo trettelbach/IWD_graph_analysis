@@ -47,7 +47,7 @@ workflow {
     graphToShapefileInput = demToGraph.out.tup.join(transectAnalysis.out)
     graphToShapefileInput = graphToShapefileInput.join(networkAnalysis.out.weightedEdgelist)
     graphToShapefileInput = graphToShapefileInput.map{it -> it[0,2,3,5]}
-    graphToShapefileInput.view()
+
     graphToShapefile(graphToShapefileInput)
 
     csv = networkAnalysis.out.csvs.map{it[1]}flatten().buffer( size: Integer.MAX_VALUE, remainder: true )
